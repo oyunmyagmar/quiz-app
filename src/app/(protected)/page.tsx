@@ -6,10 +6,22 @@ import React, { useState } from "react";
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
   const [articleContent, setArticleContent] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
-  const generateSummary = () => {
+  const generateSummary = async () => {
+    setLoading(true);
+    setArticleTitle("");
+    setArticleContent("");
+
+    const response = await fetch("/api/articles", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleTitle, articleContent }),
+    });
+
     router.push("/article");
+    setLoading(false);
   };
 
   return (
@@ -34,6 +46,7 @@ const Homepage = () => {
               <Label className="font-semibold">Article Title</Label>
             </div>
             <Input
+              value={articleTitle}
               onChange={(e) => setArticleTitle(e.target.value)}
               placeholder="Enter a title for your article..."
               className="py-2 text-foreground"
@@ -47,6 +60,7 @@ const Homepage = () => {
             </div>
 
             <Textarea
+              value={articleContent}
               onChange={(e) => setArticleContent(e.target.value)}
               placeholder="Paste your article content here..."
               className="min-h-30 text-foreground"
