@@ -27,15 +27,18 @@ export function AppSidebar() {
   return (
     <Sidebar className="group-data-[side=left]:border-0">
       <SidebarContent className="bg-background pt-14">
-        <SidebarGroup>
-          <SidebarGroupLabel className="text-xl leading-7 font-semibold text-foreground">
+        <SidebarGroup className="p-4">
+          <SidebarGroupLabel className="text-xl leading-7 h-10 py-1.5 font-semibold text-foreground">
             History
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                <SidebarMenuItem key={item.title} className="max-h-12">
+                  <SidebarMenuButton
+                    asChild
+                    className="max-w-54 text-base leading-6 h-11 font-medium text-foreground line-clamp-2"
+                  >
                     <a href={item.url}>
                       <span>{item.title}</span>
                     </a>
