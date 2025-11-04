@@ -1,27 +1,39 @@
 "use client";
+import React, { useState } from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
   const [articleContent, setArticleContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
+  const [summarizedContent, setSummarizedContent] = useState<string>(""); // tur zur bichsen ur hudas der harulah
 
   const generateSummary = async () => {
     setLoading(true);
-    setArticleTitle("");
-    setArticleContent("");
+    // setArticleTitle("");
+    // setArticleContent("");
+    setSummarizedContent(""); //tur zuur end bichsen uur huudas ruu hiih? gehdee asuuh
 
-    const response = await fetch("/api/articles", {
+    const response = await fetch("/api/generate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ articleTitle, articleContent }),
     });
+    // post yavsan article bolon backend der generate hisen iig db der hadgalah
 
-    router.push("/article");
+    const result = await response.json();
+    console.log(result, "RESULT");
+    if (result.text) {
+      setSummarizedContent(result.text); // uur hudas der harulah
+      setArticleTitle("");
+      setArticleContent("");
+    } else {
+      alert("Failed to generate summary");
+    }
     setLoading(false);
+    // router.push("/article");
   };
 
   return (
@@ -75,6 +87,9 @@ const Homepage = () => {
               Generate summary
             </Button>
           </div>
+
+          {/* tur zur gargaj bga */}
+          <div>{summarizedContent && summarizedContent}</div>
         </div>
       </div>
     </div>
