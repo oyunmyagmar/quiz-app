@@ -14,6 +14,7 @@ const QuizPage = () => {
             </div>
             <div>Take a quick test about your knowledge from your content </div>
           </div>
+
           <Button variant={"outline"} className="h-10">
             <IoCloseOutline size={16} />
           </Button>

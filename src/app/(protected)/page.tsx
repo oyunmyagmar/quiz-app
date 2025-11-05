@@ -1,7 +1,10 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui";
 import { useRouter } from "next/navigation";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { cleanText } from "@/lib/utils/get-clean-text";
+import { useArticle } from "../_hooks/use-article";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
@@ -9,11 +12,10 @@ const Homepage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const [summarizedContent, setSummarizedContent] = useState<string>(""); // tur zur bichsen ur hudas der harulah
+  const { allArticles, refetchGetAllArticles } = useArticle();
 
   const generateSummary = async () => {
     setLoading(true);
-    // setArticleTitle("");
-    // setArticleContent("");
     setSummarizedContent(""); //tur zuur end bichsen uur huudas ruu hiih? gehdee asuuh
 
     const response = await fetch("/api/generate", {
@@ -21,19 +23,48 @@ const Homepage = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ articleTitle, articleContent }),
     });
-    // post yavsan article bolon backend der generate hisen iig db der hadgalah
 
     const result = await response.json();
-    console.log(result, "RESULT");
+    // console.log(result, "RESULT");
     if (result.text) {
       setSummarizedContent(result.text); // uur hudas der harulah
-      setArticleTitle("");
-      setArticleContent("");
     } else {
       alert("Failed to generate summary");
     }
+
+    const cleanedAricleTitle = cleanText(articleTitle);
+    const cleanedArticleContent = cleanText(articleContent);
+    const cleanedSummary = cleanText(result.text);
+    // console.log(
+    //   cleanedAricleTitle,
+    //   cleanedArticleContent,
+    //   cleanedSummary,
+    //   "CLEANEDDAAT"
+    // );
+
+    const res = await fetch("/api/articles", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: cleanedAricleTitle,
+        content: cleanedArticleContent,
+        summary: cleanedSummary,
+      }),
+    });
+
+    const { data } = await res.json();
+    console.log(data, "RES-RESULT");
+
+    if (res.ok) {
+      alert("Article added to DB successfully");
+    } else {
+      alert("Failed to add article to DB");
+    }
+
     setLoading(false);
-    // router.push("/article");
+    // setArticleTitle("");
+    // setArticleContent("");
+    // router.push(`/article/${id}`);
   };
 
   return (
@@ -78,12 +109,16 @@ const Homepage = () => {
               className="min-h-30 text-foreground"
             />
           </div>
+
           <div className="flex justify-end">
             <Button
               onClick={generateSummary}
               className="w-fit h-10"
               disabled={!articleTitle || !articleContent}
             >
+              {loading && (
+                <AiOutlineLoading3Quarters className="animate-spin" />
+              )}
               Generate summary
             </Button>
           </div>

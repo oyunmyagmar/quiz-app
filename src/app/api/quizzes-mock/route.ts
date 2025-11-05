@@ -6,7 +6,7 @@ const ai = new GoogleGenAI({});
 export async function POST(request: NextRequest) {
   const { article } = await request.json();
 
-  console.log("article", article, "article");
+  // console.log("article", article, "article");
 
   if (!article) {
     return NextResponse.json(

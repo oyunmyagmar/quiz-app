@@ -26,6 +26,6 @@ export async function POST(request: NextRequest) {
   });
 
   const generatedSummary = response.text;
-  console.log("generatedSummary", generatedSummary, "generatedSummary");
+  // console.log("generatedSummary", generatedSummary, "generatedSummary");
   return NextResponse.json({ text: generatedSummary });
 }
