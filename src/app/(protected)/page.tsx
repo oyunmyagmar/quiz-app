@@ -1,22 +1,18 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { cleanText } from "@/lib/utils/get-clean-text";
-import { useArticle } from "../_hooks/use-article";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
   const [articleContent, setArticleContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [summarizedContent, setSummarizedContent] = useState<string>(""); // tur zur bichsen ur hudas der harulah
-  const { allArticles, refetchGetAllArticles } = useArticle();
 
   const generateSummary = async () => {
     setLoading(true);
-    setSummarizedContent(""); //tur zuur end bichsen uur huudas ruu hiih? gehdee asuuh
 
     const response = await fetch("/api/generate", {
       method: "POST",
@@ -26,21 +22,15 @@ const Homepage = () => {
 
     const result = await response.json();
     // console.log(result, "RESULT");
-    if (result.text) {
-      setSummarizedContent(result.text); // uur hudas der harulah
-    } else {
-      alert("Failed to generate summary");
-    }
+    // if (result.text) {
+    //   setSummarizedContent(result.text); // uur hudas der harulah
+    // } else {
+    //   alert("Failed to generate summary");
+    // }
 
     const cleanedAricleTitle = cleanText(articleTitle);
     const cleanedArticleContent = cleanText(articleContent);
     const cleanedSummary = cleanText(result.text);
-    // console.log(
-    //   cleanedAricleTitle,
-    //   cleanedArticleContent,
-    //   cleanedSummary,
-    //   "CLEANEDDAAT"
-    // );
 
     const res = await fetch("/api/articles", {
       method: "POST",
@@ -52,19 +42,20 @@ const Homepage = () => {
       }),
     });
 
-    const { data } = await res.json();
-    console.log(data, "RES-RESULT");
-
     if (res.ok) {
       alert("Article added to DB successfully");
+      const { data } = await res.json();
+      const articleData = data.rows[0];
+      // console.log(articleData.id, "articleDataID");
+      setLoading(false);
+      setArticleTitle("");
+      setArticleContent("");
+      if (articleData?.id) {
+        router.push(`/article/${articleData.id}`);
+      }
     } else {
       alert("Failed to add article to DB");
     }
-
-    setLoading(false);
-    // setArticleTitle("");
-    // setArticleContent("");
-    // router.push(`/article/${id}`);
   };
 
   return (
@@ -122,9 +113,6 @@ const Homepage = () => {
               Generate summary
             </Button>
           </div>
-
-          {/* tur zur gargaj bga */}
-          <div>{summarizedContent && summarizedContent}</div>
         </div>
       </div>
     </div>

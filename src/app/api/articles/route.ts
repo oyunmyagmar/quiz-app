@@ -11,27 +11,24 @@ export const POST = async (request: NextRequest) => {
   const body = await request.json();
   const { title, content, summary } = body;
 
-  console.log(
-    title,
-    "TITLE",
-    "CONTENT",
-    content,
-    "CONTENT",
-    "SUMMARY",
-    summary,
-    "SUMMARY"
-  );
+  // console.log(
+  //   "TITLE",
+  //   title,
+  //   "TITLE",
+  //   "CONTENT",
+  //   content,
+  //   "CONTENT",
+  //   "SUMMARY",
+  //   summary,
+  //   "SUMMARY"
+  // );
 
   const article = await query(
-    `INSERT INTO articles(title, content, summary) VALUES('${title}', '${content}', '${summary}')`
-  );
-
-  const articleId = await query(
-    `SELECT article.id FROM articles WHERE article.title = ${title}`
+    `INSERT INTO articles(title, content, summary) VALUES('${title}', '${content}', '${summary}') RETURNING *`
   );
 
   return NextResponse.json({
     message: "Article added to DB successfully",
-    data: articleId,
+    data: article,
   });
 };

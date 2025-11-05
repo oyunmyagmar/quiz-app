@@ -1,4 +1,4 @@
-function parseJsonBlock(input: any) {
+export function parseJsonBlock(input: any) {
   // Remove ```json and ``` (with optional whitespace or newlines)
   const cleaned = input.replace(/```json\s*([\s\S]*?)\s*```/, "$1").trim();
 

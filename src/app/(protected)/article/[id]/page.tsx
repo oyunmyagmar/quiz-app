@@ -1,39 +1,41 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button, Input, Label, Textarea } from "@/components/ui";
-import { PiBookOpen } from "react-icons/pi";
-import { useRouter } from "next/navigation";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { Button, Label } from "@/components/ui";
+import { useRouter, useParams } from "next/navigation";
 import { useArticle } from "@/app/_hooks/use-article";
-import { useParams } from "next/navigation";
+import { ArticleType } from "@/lib/types";
+import { RiLoader5Fill } from "react-icons/ri";
+import { PiBookOpen } from "react-icons/pi";
+import { parseJsonBlock } from "@/lib/utils/get-clean-text";
 
 const ArticlePage = () => {
-  const [summarizedContent, setSummarizedContent] = useState<string>(""); // div der garaar orulsan db-ees backend huselteer avah
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [article, setArticle] = useState<string>(""); // odoo tur input-ees avch bga db-as backend huselter avah
   const [quizzes, setQuizzes] = useState<string>(""); // tur orulsan uur page der gargah
+
   const { allArticles, refetchGetAllArticles } = useArticle();
   const params = useParams();
   const { id } = params;
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType>();
+  // console.log(selectedArticle, "selectedArticle");
+  const selectedArticleContent = selectedArticle?.content;
 
   useEffect(() => {
     if (id) {
       const foundArticle = allArticles.find((artic) => artic.id === id);
+      console.log(foundArticle, "foundArticle");
+      setSelectedArticle(foundArticle);
     }
-  }, [id]);
+  }, [allArticles]);
 
-  //article get huselt hiij db der hadgalsan article avah
-  //generated summary get huselt hij db der hadgalsan summary avah
-
-  const generateQuiz = async () => {
+  const generateQuiz = async (articleId: string) => {
     setLoading(true);
     setQuizzes(""); // tur zuur bichsen
 
-    const response = await fetch("/api/quizzes-mock", {
+    const response = await fetch(`/api/article${articleId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ article }), // tur zuur input nemeed input -ees article avaad quiz usgej uzvel
+      body: JSON.stringify({ selectedArticleContent }),
       // article db der hadgalad article tus bur uurin id -tei id ugch yavulad quizzes generate hiih
     });
     const result = await response.json();
@@ -46,19 +48,9 @@ const ArticlePage = () => {
       alert("Failed to generate quizzes");
     }
     setLoading(false);
-    // router.push("/quiz");
+    // router.push("/quizzes");
   };
 
-  function parseJsonBlock(input: string) {
-    const cleaned = input.replace(/```json\s*([\s\S]*?)\s*```/, "$1").trim();
-
-    try {
-      return JSON.parse(cleaned);
-    } catch (error) {
-      console.error("Invalid JSON:", error);
-      return null;
-    }
-  }
   const quizzesObj = parseJsonBlock(quizzes);
   console.log(quizzesObj);
 
@@ -71,6 +63,14 @@ const ArticlePage = () => {
             <div>Article Quiz Generator</div>
           </div>
 
+          <>
+            {!selectedArticle && (
+              <div className="flex justify-center">
+                <RiLoader5Fill size={24} className="animate-spin" />
+              </div>
+            )}
+          </>
+
           <div className="flex flex-col gap-2 text-sm leading-5">
             <div className="flex gap-1 items-center">
               <PiBookOpen size={16} className="text-foreground" />
@@ -78,23 +78,10 @@ const ArticlePage = () => {
             </div>
 
             <div className="text-2xl leading-8 font-semibold text-foreground">
-              {"article title="}Genghis khan
-              {"=article title"}
+              {selectedArticle?.title}
             </div>
 
-            <div className="text-foreground">
-              {"summarized content="} Genghis Khan, born Temüjin around 1162,
-              was the founder of the Mongol Empire. After his father's death,
-              Temüjin's family was left in poverty, and he later killed his
-              half-brother to secure his position. He built alliances with
-              leaders like Jamukha and Toghrul, and despite being defeated in
-              battle and briefly under the Jin dynasty, he rose to power by
-              defeating rivals. By 1206, after overcoming the Naiman tribe and
-              executing Jamukha, Temüjin became the undisputed ruler of the
-              Mongol steppe, eventually leading a series of successful military
-              campaigns that expanded his empire across China and Central Asia.
-              {"=summarized content"}
-            </div>
+            <div className="text-foreground">{selectedArticle?.summary}</div>
           </div>
 
           <div className="flex justify-between">
@@ -104,23 +91,22 @@ const ArticlePage = () => {
             >
               See content
             </Button>
-
-            <Button onClick={generateQuiz} className="h-10">
-              {loading && (
-                <AiOutlineLoading3Quarters className="animate-spin" />
-              )}
-              Take a quiz
-            </Button>
+            {selectedArticle && (
+              <Button
+                onClick={() => generateQuiz(selectedArticle?.id)}
+                className="h-10"
+              >
+                {loading && <RiLoader5Fill className="animate-spin" />}
+                Take a quiz
+              </Button>
+            )}
           </div>
 
-          {/* tur zuur quizzes gargaj irehiin tuld article input hiv */}
-          <Textarea
-            value={article}
-            onChange={(e) => setArticle(e.target.value)}
-          />
-
           {/* tur zuur gargav uur hudas der gargah */}
-          <div>{quizzesObj && quizzesObj.map((el: any) => el.question)}</div>
+          <div>
+            {quizzesObj &&
+              quizzesObj.map((el: any) => <div>{el.question}</div>)}
+          </div>
         </div>
       </div>
     </div>
