@@ -32,7 +32,7 @@ const ArticlePage = () => {
     setLoading(true);
     setQuizzes(""); // tur zuur bichsen
 
-    const response = await fetch(`/api/article${articleId}`, {
+    const response = await fetch(`/api/article/${articleId}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ selectedArticleContent }),
