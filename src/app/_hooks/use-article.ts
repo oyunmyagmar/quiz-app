@@ -18,5 +18,5 @@ export const useArticle = () => {
     getAllArticles();
   }, []);
 
-  return { allArticles, refetchGetAllArticles: getAllArticles };
+  return { allArticles };
 };

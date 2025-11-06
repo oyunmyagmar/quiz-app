@@ -5,9 +5,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({});
 
+export const GET = async () => {
+  const quizzes = await query("SELECT * FROM quizzes");
+  console.log({ quizzes });
+  return NextResponse.json({ data: quizzes.rows }, { status: 200 });
+};
+
 export async function POST(request: NextRequest) {
   const { selectedArticleContent, articleId } = await request.json();
-
   // console.log("selectedArticleContent", selectedArticleContent, "articleId", articleId);
 
   if (!selectedArticleContent || !articleId) {

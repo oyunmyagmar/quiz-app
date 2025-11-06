@@ -10,16 +10,24 @@ import { PiBookOpen } from "react-icons/pi";
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const { allArticles, refetchGetAllArticles } = useArticle();
+  const { allArticles } = useArticle();
   const params = useParams();
-  const { id } = params;
+  const { articleId } = params;
   const [selectedArticle, setSelectedArticle] = useState<ArticleType>();
   // console.log(selectedArticle, "selectedArticle");
   const selectedArticleContent = selectedArticle?.content;
 
+  // useEffect(() => {
+  //   if (articleId) {
+  //     const foundArticle = allArticles.find((artic) => artic.id === articleId);
+  //     console.log(foundArticle, "foundArticle");
+  //     setSelectedArticle(foundArticle);
+  //   }
+  // }, []); // 1-iig avdag-iig bichih
+
   useEffect(() => {
-    if (id) {
-      const foundArticle = allArticles.find((artic) => artic.id === id);
+    if (articleId) {
+      const foundArticle = allArticles.find((artic) => artic.id === articleId);
       console.log(foundArticle, "foundArticle");
       setSelectedArticle(foundArticle);
     }
@@ -44,10 +52,8 @@ const ArticlePage = () => {
     //   alert("Failed to generate quizzes");
     // }
 
-    // const { question, options, answer } = result.text;
-
     setLoading(false);
-    router.push("/quizzes");
+    router.push(`/article/${articleId}/quizzes`);
   };
 
   return (

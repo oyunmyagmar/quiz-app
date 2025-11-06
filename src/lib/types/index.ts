@@ -3,6 +3,7 @@ export type ArticleType = {
   title: string;
   content: string;
   summary: string;
+  userId?: string;
   createdat: string;
   updatedat: string;
 };
