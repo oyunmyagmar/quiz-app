@@ -4,8 +4,8 @@ import { Button, Label } from "@/components/ui";
 import { useRouter, useParams } from "next/navigation";
 import { useArticle } from "@/app/_hooks/use-article";
 import { ArticleType } from "@/lib/types";
-import { RiLoader5Fill } from "react-icons/ri";
 import { PiBookOpen } from "react-icons/pi";
+import { AiOutlineLoading } from "react-icons/ai";
 
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -65,19 +65,19 @@ const ArticlePage = () => {
             <div>Article Quiz Generator</div>
           </div>
 
-          <>
-            {!selectedArticle && (
-              <div className="flex justify-center">
-                <RiLoader5Fill size={24} className="animate-spin" />
-              </div>
-            )}
-          </>
-
           <div className="flex flex-col gap-2 text-sm leading-5">
             <div className="flex gap-1 items-center">
               <PiBookOpen size={16} className="text-foreground" />
               <Label className="font-semibold">Summarized content</Label>
             </div>
+
+            <>
+              {!selectedArticle && (
+                <div className="flex justify-center items-center">
+                  <AiOutlineLoading size={24} className="animate-spin" />
+                </div>
+              )}
+            </>
 
             <div className="text-2xl leading-8 font-semibold text-foreground">
               {selectedArticle?.title}
@@ -93,16 +93,15 @@ const ArticlePage = () => {
             >
               See content
             </Button>
-            {selectedArticle && (
-              <Button
-                disabled={loading}
-                onClick={() => generateQuiz(selectedArticle?.id)}
-                className="h-10"
-              >
-                {loading && <RiLoader5Fill className="animate-spin" />}
-                Take a quiz
-              </Button>
-            )}
+
+            <Button
+              disabled={loading || !selectedArticle}
+              onClick={() => generateQuiz(selectedArticle?.id)}
+              className="h-10"
+            >
+              {loading && <AiOutlineLoading className="animate-spin" />}
+              Take a quiz
+            </Button>
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { AiOutlineLoading3Quarters } from "react-icons/ai";
+import { AiOutlineLoading } from "react-icons/ai";
 import { cleanText } from "@/lib/utils/get-clean-text";
 
 const Homepage = () => {
@@ -107,9 +107,7 @@ const Homepage = () => {
               className="w-fit h-10"
               disabled={!articleTitle || !articleContent}
             >
-              {loading && (
-                <AiOutlineLoading3Quarters className="animate-spin" />
-              )}
+              {loading && <AiOutlineLoading className="animate-spin" />}
               Generate summary
             </Button>
           </div>
