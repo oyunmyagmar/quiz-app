@@ -6,13 +6,10 @@ import { useArticle } from "@/app/_hooks/use-article";
 import { ArticleType } from "@/lib/types";
 import { RiLoader5Fill } from "react-icons/ri";
 import { PiBookOpen } from "react-icons/pi";
-import { parseJsonBlock } from "@/lib/utils/get-clean-text";
 
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [quizzes, setQuizzes] = useState<string[]>(); // tur orulsan uur page der gargah
-
   const { allArticles, refetchGetAllArticles } = useArticle();
   const params = useParams();
   const { id } = params;
@@ -30,13 +27,11 @@ const ArticlePage = () => {
 
   const generateQuiz = async (articleId: string) => {
     setLoading(true);
-    // setQuizzes(); // tur zuur bichsen
 
     const response = await fetch(`/api/article/${articleId}/quizzes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ selectedArticleContent, articleId }),
-      // article db der hadgalad article tus bur uurin id -tei id ugch yavulad quizzes generate hiih
     });
     const result = await response.json();
     // const resultRes = result.text;
@@ -51,17 +46,9 @@ const ArticlePage = () => {
 
     // const { question, options, answer } = result.text;
 
-    // const res = await fetch(`/api/article/${articleId}`, {
-    //   method: "POST",
-    //   headers: { "Content-Type": "application/json" },
-    //   body: JSON.stringify({ question, options, answer }),
-    // });
-
     setLoading(false);
-    // router.push("/quizzes");
+    router.push("/quizzes");
   };
-
-  console.log(quizzes);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -110,11 +97,6 @@ const ArticlePage = () => {
                 Take a quiz
               </Button>
             )}
-          </div>
-
-          {/* tur zuur gargav uur hudas der gargah */}
-          <div>
-            {quizzes && quizzes.map((el: any) => <div>{el.options}</div>)}
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ const ai = new GoogleGenAI({});
 export async function POST(request: NextRequest) {
   const { selectedArticleContent, articleId } = await request.json();
 
-  // console.log("article", selectedArticleContent, "articleId", articleId);
+  // console.log("selectedArticleContent", selectedArticleContent, "articleId", articleId);
 
   if (!selectedArticleContent || !articleId) {
     return NextResponse.json(
@@ -60,23 +60,6 @@ export async function POST(request: NextRequest) {
       console.error("Error while adding quiz to DB", error, item);
     }
   }
-
-  // quizObj.map(async (item: any) => {
-  //   const quiz = await query(
-  //     `INSERT INTO quizzes(question, options, answer, articleId) VALUES('${item.question}', '{${item.options}}', '${item.answer}', '${articleId}')`
-  //   );
-  //   console.log(quiz, "QUIZ");
-  //   console.log(
-  //     item.question,
-  //     "item.question",
-  //     item.options,
-  //     " item.options",
-  //     item.answer,
-  //     "item.answer",
-  //     item.articleId,
-  //     "item.articleId"
-  //   );
-  // });
 
   // console.log("generatedQuiz", generatedQuiz, "generatedQuiz");
   // return NextResponse.json({ text: generatedQuiz });
