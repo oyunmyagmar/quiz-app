@@ -6,3 +6,13 @@ export type ArticleType = {
   createdat: string;
   updatedat: string;
 };
+
+export type QuizType = {
+  id: string;
+  question: string;
+  options: string[];
+  answer: string;
+  articleid: string;
+  createdat: string;
+  updatedat: string;
+};

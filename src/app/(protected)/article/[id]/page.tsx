@@ -11,7 +11,7 @@ import { parseJsonBlock } from "@/lib/utils/get-clean-text";
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-  const [quizzes, setQuizzes] = useState<string>(""); // tur orulsan uur page der gargah
+  const [quizzes, setQuizzes] = useState<string[]>(); // tur orulsan uur page der gargah
 
   const { allArticles, refetchGetAllArticles } = useArticle();
   const params = useParams();
@@ -30,29 +30,38 @@ const ArticlePage = () => {
 
   const generateQuiz = async (articleId: string) => {
     setLoading(true);
-    setQuizzes(""); // tur zuur bichsen
+    // setQuizzes(); // tur zuur bichsen
 
-    const response = await fetch(`/api/article/${articleId}`, {
+    const response = await fetch(`/api/article/${articleId}/quizzes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ selectedArticleContent }),
+      body: JSON.stringify({ selectedArticleContent, articleId }),
       // article db der hadgalad article tus bur uurin id -tei id ugch yavulad quizzes generate hiih
     });
     const result = await response.json();
     // const resultRes = result.text;
 
-    console.log(result.text, "RESULT");
-    if (result.text) {
-      setQuizzes(result.text);
-    } else {
-      alert("Failed to generate quizzes");
-    }
+    // console.log(result.text, "RESULT");
+    // if (result.text) {
+    //   const quizzesObj = parseJsonBlock(result.text);
+    //   setQuizzes(quizzesObj);
+    // } else {
+    //   alert("Failed to generate quizzes");
+    // }
+
+    // const { question, options, answer } = result.text;
+
+    // const res = await fetch(`/api/article/${articleId}`, {
+    //   method: "POST",
+    //   headers: { "Content-Type": "application/json" },
+    //   body: JSON.stringify({ question, options, answer }),
+    // });
+
     setLoading(false);
     // router.push("/quizzes");
   };
 
-  const quizzesObj = parseJsonBlock(quizzes);
-  console.log(quizzesObj);
+  console.log(quizzes);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -93,6 +102,7 @@ const ArticlePage = () => {
             </Button>
             {selectedArticle && (
               <Button
+                disabled={loading}
                 onClick={() => generateQuiz(selectedArticle?.id)}
                 className="h-10"
               >
@@ -104,8 +114,7 @@ const ArticlePage = () => {
 
           {/* tur zuur gargav uur hudas der gargah */}
           <div>
-            {quizzesObj &&
-              quizzesObj.map((el: any) => <div>{el.question}</div>)}
+            {quizzes && quizzes.map((el: any) => <div>{el.options}</div>)}
           </div>
         </div>
       </div>

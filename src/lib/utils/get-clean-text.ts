@@ -1,4 +1,4 @@
-export function parseJsonBlock(input: any) {
+export function parseJsonBlock(input: string) {
   // Remove ```json and ``` (with optional whitespace or newlines)
   const cleaned = input.replace(/```json\s*([\s\S]*?)\s*```/, "$1").trim();
 
@@ -20,4 +20,16 @@ export function cleanText(input: any) {
     .replace(/\s+/g, " ") // collapse multiple spaces
     .replace(/\s([.,;:!?])/g, "$1") // remove spaces before punctuation
     .trim(); // remove leading/trailing spaces
+}
+
+export function parseJsonBlockSafe(input: string) {
+  const cleaned = input.replace(/```(?:json)?\s*([\s\S]*?)\s*```/, "$1").trim();
+
+  try {
+    return JSON.parse(cleaned);
+  } catch (err) {
+    console.error("Invalid JSON from AI:", err);
+    console.log("AI text was:", cleaned);
+    return null;
+  }
 }
