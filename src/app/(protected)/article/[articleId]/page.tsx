@@ -5,7 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import { useArticle } from "@/app/_hooks/use-article";
 import { ArticleType } from "@/lib/types";
 import { PiBookOpen } from "react-icons/pi";
-import { AiOutlineLoading } from "react-icons/ai";
+// import { AiOutlineLoading } from "react-icons/ai";
+import { LuLoaderCircle } from "react-icons/lu";
 
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -74,7 +75,7 @@ const ArticlePage = () => {
             <>
               {!selectedArticle && (
                 <div className="flex justify-center items-center">
-                  <AiOutlineLoading size={24} className="animate-spin" />
+                  <LuLoaderCircle size={24} className="animate-spin" />
                 </div>
               )}
             </>
@@ -99,7 +100,7 @@ const ArticlePage = () => {
               onClick={() => generateQuiz(selectedArticle?.id)}
               className="h-10"
             >
-              {loading && <AiOutlineLoading className="animate-spin" />}
+              {loading && <LuLoaderCircle className="animate-spin" />}
               Take a quiz
             </Button>
           </div>

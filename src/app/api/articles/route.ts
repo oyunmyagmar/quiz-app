@@ -10,18 +10,6 @@ export const POST = async (request: NextRequest) => {
   const body = await request.json();
   const { title, content, summary } = body;
 
-  // console.log(
-  //   "TITLE",
-  //   title,
-  //   "TITLE",
-  //   "CONTENT",
-  //   content,
-  //   "CONTENT",
-  //   "SUMMARY",
-  //   summary,
-  //   "SUMMARY"
-  // );
-
   const article = await query(
     `INSERT INTO articles(title, content, summary) VALUES('${title}', '${content}', '${summary}') RETURNING *`
   );
