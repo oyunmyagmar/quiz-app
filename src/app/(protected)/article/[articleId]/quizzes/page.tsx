@@ -13,13 +13,24 @@ import { LuBookmark } from "react-icons/lu";
 // interface QuizParams {
 //   articleId: string;
 // }
+
+interface QuizResultType {
+  question: string;
+  userAnswerIndex: string;
+  correctAnsIndex: string;
+  userAnswerString?: string;
+  correctAnswerString?: string;
+}
+
 const QuizPage = () => {
   const { articleId } = useParams();
   const [allQuizzes, setAllQuizzes] = useState<QuizType[]>([]);
   const [step, setStep] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
   const [correctAnswer, setCorrectAnswer] = useState<string[]>([]);
-  const [wrongAnswer, setWrongAnswer] = useState<string[]>([]);
+  const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
+  console.log({ correctAnswer }, "CORRECTANSWERS");
+  const userScore = correctAnswer.length;
 
   useEffect(() => {
     if (articleId) {
@@ -41,20 +52,58 @@ const QuizPage = () => {
     (item) => item.articleid === articleId
   );
 
-  const quizStepHandler = (
+  const quizStepScoreHandler = (
+    quizQuestion: string,
     selectedAnswerI: string,
-    rightAnswerI: string,
-    question: string
+    quizAnswerI: string,
+    quiz: QuizType
   ) => {
-    if (selectedAnswerI === rightAnswerI) {
-      correctAnswer.push(selectedAnswerI);
-    } else {
-      wrongAnswer.push(selectedAnswerI);
+    const quizAnswer = quiz.options.find(
+      (opt, i) => JSON.stringify(i) === quizAnswerI
+    );
+    const clientAnswer = quiz.options.find(
+      (opt, i) => JSON.stringify(i) === selectedAnswerI
+    );
+
+    if (selectedAnswerI === quizAnswerI) {
+      const newCorrectAnswer = [...correctAnswer, quizAnswerI];
+      setCorrectAnswer(newCorrectAnswer);
+    }
+
+    const newQuizResult = [
+      ...quizResult,
+      {
+        question: quizQuestion,
+        userAnswerIndex: selectedAnswerI,
+        correctAnsIndex: quizAnswerI,
+        userAnswerString: clientAnswer,
+        correctAnswerString: quizAnswer,
+      },
+    ];
+
+    if (newQuizResult) {
+      setQuizResult(newQuizResult);
     }
     setStep((prev) => prev + 1);
   };
-  console.log({ correctAnswer });
-  console.log({ wrongAnswer });
+  // console.log({ correctAnswer });
+  // console.log({ quizResult });
+
+  const restartQuizHandler = () => {
+    setStep(0);
+    setQuizResult([]);
+    setCorrectAnswer([]);
+  };
+
+  const saveQuizScoreHandler = async (score: number) => {
+    setLoading(true);
+    await fetch(`/api/article/${articleId}/quizzes/score`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userScore, articleId }),
+    });
+    setLoading(false);
+  };
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -100,10 +149,11 @@ const QuizPage = () => {
                       {quiz.options.map((opt, index) => (
                         <Button
                           onClick={() =>
-                            quizStepHandler(
+                            quizStepScoreHandler(
+                              quiz.question,
                               JSON.stringify(index),
                               quiz.answer,
-                              quiz.question
+                              quiz
                             )
                           }
                           key={opt}
@@ -134,36 +184,50 @@ const QuizPage = () => {
 
           <div className="w-full bg-background rounded-lg p-7 border border-border flex flex-col gap-7">
             <div className="text-2xl leading-8 font-semibold">
-              Your score: 2{" "}
+              Your score: {correctAnswer.length}
               <span className="text-base leading-6 font-medium text-muted-foreground">
                 /{articleQuizes.length}
               </span>
             </div>
 
             <div className="flex flex-col gap-5">
-              {Array.from({ length: 5 }).map((el, i) => (
-                <div className="flex gap-3">
+              {quizResult.map((res, i) => (
+                <div key={i} className="flex gap-3">
                   <div>
-                    <CgCloseO size={22} className="text-red-700" />{" "}
-                    <LuCircleCheck size={22} className="text-green-500" />
+                    {res.userAnswerString !== res.correctAnswerString ? (
+                      <CgCloseO size={22} className="text-red-700" />
+                    ) : (
+                      <LuCircleCheck size={22} className="text-green-500" />
+                    )}
                   </div>
                   <div className="flex flex-col gap-1 text-xs leading-4 font-medium">
                     <div className="text-muted-foreground">
-                      <span>{i + 1}</span>What was Genghis Khan’s birth name?
+                      <span>{i + 1}. </span>
+                      {res.question}
                     </div>
-                    <div>Your answer: Toghrul</div>
-                    <div className="text-green-500">Correct: Temüjin</div>
+                    <div>Your answer: {res.userAnswerString}</div>
+                    <div className="text-green-500">
+                      {res.userAnswerString !== res.correctAnswerString &&
+                        `Correct: ${res.correctAnswerString}`}
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="flex justify-between">
-              <Button variant={"outline"}>
+              <Button
+                // onClick={() => router.push(`/article/${articleId}/quizzes`)}
+                onClick={restartQuizHandler}
+                variant={"outline"}
+              >
                 <RxReload size={16} />
                 Restart quiz
               </Button>
-              <Button>
+              <Button
+                onClick={() => saveQuizScoreHandler(userScore)}
+                disabled={loading}
+              >
                 <LuBookmark size={16} />
                 Save and leave
               </Button>
