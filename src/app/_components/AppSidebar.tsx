@@ -1,52 +1,42 @@
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarHeader,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@/components/ui/sidebar";
-
-const items = [
-  { title: "Genghis Khan", url: "/" },
-  { title: "Figma ашиглах заавар", url: "/" },
-  { title: "Санхүүгийн шийдвэрүүд", url: "/" },
-  { title: "Figma-д загвар зохион бүтээх аргачлалууд", url: "/" },
-  { title: "Санхүүгийн технологи 2023", url: "/" },
-  { title: "Хэрэглэгчийн интерфейс дизайны шилдэг туршлага", url: "/" },
-  { title: "Архитектур загварчлалын хөтөлбөрүүд", url: "/" },
-  { title: "Эрүүл амьдралын хэв маяг", url: "/" },
-  { title: "Технологийн салбарт хийгдэж буй инноваци", url: "/" },
-];
+"use client";
+import { Button } from "@/components/ui";
+import { useRouter } from "next/navigation";
+import { useArticle } from "../_hooks/use-article";
 
 export function AppSidebar() {
+  const { allArticles } = useArticle();
+  const router = useRouter();
+
+  const handleHideSidebar = () => {};
+
   return (
-    <Sidebar className="group-data-[side=left]:border-0">
-      <SidebarContent className="bg-background pt-14">
-        <SidebarGroup className="p-4">
-          <SidebarGroupLabel className="text-xl leading-7 h-10 py-1.5 font-semibold text-foreground">
+    <div className="w-full mt-14 flex gap-2 p-4">
+      <div className="flex-1">
+        <div className="flex flex-col gap-2">
+          <div className="text-xl leading-7 font-semibold text-foreground py-1.5">
             History
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url}>
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-          <SidebarFooter />
-        </SidebarGroup>
-      </SidebarContent>
-    </Sidebar>
+          </div>
+          <div className="flex flex-col gap-1">
+            {allArticles.map((article) => (
+              <Button
+                onClick={() => router.push(`/article/${article.id}`)}
+                variant={"ghost"}
+                className="h-11 w-fit text-base px-0 has-[>svg]:px-0"
+              >
+                {article.title}
+              </Button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <Button
+        onClick={handleHideSidebar}
+        variant={"ghost"}
+        className="h-10 px-2"
+      >
+        <img src="/sidebar.svg" alt="" />
+      </Button>
+    </div>
   );
 }
