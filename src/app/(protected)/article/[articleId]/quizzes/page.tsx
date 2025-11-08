@@ -143,6 +143,7 @@ const QuizPage = () => {
               </div>
             </div>
 
+            {"adlskfjendess alert dialog"}
             <Button variant={"outline"} className="h-10 has-[>svg]:px-4">
               <IoCloseOutline size={16} />
             </Button>
