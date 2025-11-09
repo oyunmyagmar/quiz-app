@@ -12,6 +12,11 @@ const Homepage = () => {
   const router = useRouter();
 
   const generateSummary = async () => {
+    if (!articleTitle || !articleContent) {
+      alert("All fields are required!");
+      return;
+    }
+
     setLoading(true);
 
     const response = await fetch("/api/generate", {
@@ -23,6 +28,7 @@ const Homepage = () => {
     if (!response.ok) {
       alert("Failed to generate summary!");
     }
+
     const result = await response.json();
 
     const cleanedAricleTitle = cleanText(articleTitle);
@@ -50,7 +56,6 @@ const Homepage = () => {
       }
     } else {
       alert("Failed to add article to DB!");
-      setLoading(false);
     }
   };
 

@@ -3,37 +3,33 @@ import React, { useEffect, useState } from "react";
 import { Button, Label } from "@/components/ui";
 import { useRouter, useParams } from "next/navigation";
 import { useArticle } from "@/app/_hooks/use-article";
-import { ArticleType } from "@/lib/types";
 import { PiBookOpen } from "react-icons/pi";
 import { LuLoaderCircle } from "react-icons/lu";
 
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
+  const { articleId } = useParams<{ articleId: string }>();
+  const { selectedArticle } = useArticle();
+  const [selectedArticleId, setSelectedArticleId] = useState<string>("");
+  const [selectedArticleContent, setSelectedArticleContent] =
+    useState<string>("");
   const router = useRouter();
-  const { allArticles } = useArticle();
-  const params = useParams();
-  const { articleId } = params;
-  const [selectedArticle, setSelectedArticle] = useState<ArticleType>();
-  // console.log(selectedArticle, "selectedArticle");
-  const selectedArticleContent = selectedArticle?.content;
-
-  // useEffect(() => {
-  //   if (articleId) {
-  //     const foundArticle = allArticles.find((artic) => artic.id === articleId);
-  //     console.log(foundArticle, "foundArticle");
-  //     setSelectedArticle(foundArticle);
-  //   }
-  // }, []); // 1-iig avdag-iig bichih
 
   useEffect(() => {
-    if (articleId) {
-      const foundArticle = allArticles.find((artic) => artic.id === articleId);
-      console.log(foundArticle, "foundArticle");
-      setSelectedArticle(foundArticle);
+    if (selectedArticle?.id === articleId) {
+      setSelectedArticleId(selectedArticle.id);
     }
-  }, [allArticles]);
+    if (selectedArticle) {
+      setSelectedArticleContent(selectedArticle.content);
+    }
+  }, [selectedArticle, articleId]);
 
   const generateQuiz = async (articleId: string) => {
+    if (!selectedArticleContent || !articleId) {
+      alert("Article content or id is required");
+      return;
+    }
+
     setLoading(true);
 
     const response = await fetch(`/api/article/${articleId}/quizzes`, {
@@ -41,19 +37,14 @@ const ArticlePage = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ selectedArticleContent, articleId }),
     });
-    const result = await response.json();
-    // const resultRes = result.text;
 
-    // console.log(result.text, "RESULT");
-    // if (result.text) {
-    //   const quizzesObj = parseJsonBlock(result.text);
-    //   setQuizzes(quizzesObj);
-    // } else {
-    //   alert("Failed to generate quizzes");
-    // }
-
-    setLoading(false);
-    router.push(`/article/${articleId}/quizzes`);
+    if (response.ok) {
+      setLoading(false);
+      alert("Quiz added to DB successfully");
+      router.push(`/article/${articleId}/quizzes`);
+    } else {
+      alert("Error while generating and adding quiz to DB!");
+    }
   };
 
   return (
@@ -66,8 +57,8 @@ const ArticlePage = () => {
           </div>
 
           <div className="flex flex-col gap-2 text-sm leading-5">
-            <div className="flex gap-1 items-center">
-              <PiBookOpen size={16} className="text-foreground" />
+            <div className="flex gap-2 items-center">
+              <PiBookOpen size={16} />
               <Label className="text-[#737373]">Summarized content</Label>
             </div>
             <>
@@ -77,8 +68,14 @@ const ArticlePage = () => {
                 </div>
               )}
             </>
-            <div className="text-2xl leading-8">{selectedArticle?.title}</div>
-            <div className="font-normal">{selectedArticle?.summary}</div>
+            {selectedArticle && selectedArticleId && (
+              <div className="flex flex-col gap-2">
+                <div className="text-2xl leading-8">
+                  {selectedArticle.title}
+                </div>
+                <div className="font-normal">{selectedArticle.summary}</div>
+              </div>
+            )}
           </div>
 
           <div className="flex justify-between">
@@ -90,9 +87,9 @@ const ArticlePage = () => {
               See content
             </Button>
             <Button
-              disabled={loading || !selectedArticle}
+              disabled={loading || !selectedArticle || !selectedArticleId}
               size={"lg"}
-              onClick={() => generateQuiz(selectedArticle?.id)}
+              onClick={() => generateQuiz(selectedArticleId)}
               className="px-4"
             >
               {loading && <LuLoaderCircle className="animate-spin" />}

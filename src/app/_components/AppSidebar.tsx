@@ -24,9 +24,12 @@ export function AppSidebar() {
           <div className="flex flex-col gap-1">
             {allArticles.map((article) => (
               <Button
-                onClick={() => router.push(`/article/${article.id}`)}
+                onClick={() =>
+                  router.push(`/article/${article.id}/generated-article`)
+                }
+                key={article.id}
                 variant={"ghost"}
-                className="h-auto w-fit text-base px-0 has-[>svg]:px-0 py-2.5 text-left"
+                className="h-auto w-fit text-base px-0 has-[>svg]:px-0 py-2.5 text-left cursor-pointer"
               >
                 {article.title}
               </Button>

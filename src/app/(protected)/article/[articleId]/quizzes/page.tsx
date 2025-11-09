@@ -3,15 +3,12 @@ import React, { useEffect, useState } from "react";
 import {
   Button,
   AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-  AlertDialogOverlay,
 } from "@/components/ui";
 import { IoCloseOutline, IoCloseCircleOutline } from "react-icons/io5";
 import { LuCircleCheck, LuBookmark, LuLoaderCircle } from "react-icons/lu";
@@ -36,16 +33,18 @@ interface QuizScoresType {
 }
 
 const QuizPage = () => {
-  const { articleId } = useParams();
+  const { articleId } = useParams<{ articleId: string }>();
   const [allQuizzes, setAllQuizzes] = useState<QuizType[]>([]);
   const [step, setStep] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
   let userScore = 0;
   const router = useRouter();
   const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  let [min, setMin] = useState<number>(0);
+  let [sec, setSec] = useState<number>(0);
 
   quizScores.forEach((item) => (userScore = userScore + item.quizScore));
   console.log({ quizScores });
@@ -132,6 +131,7 @@ const QuizPage = () => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quizScores }),
     });
+
     if (res.ok) {
       alert("Score added to DB successfully");
       setLoading(false);
@@ -145,6 +145,18 @@ const QuizPage = () => {
     setOpen(false);
     restartQuizHandler();
   };
+
+  // useEffect(() => {
+  //   setInterval(() => {
+  //     if (step === 0) {
+  //       setSec((prev) => prev + 1);
+
+  //       if (sec > 60) {
+  //         setMin((prev) => prev + 1);
+  //       }
+  //     }
+  //   }, 1000);
+  // }, [step === 0]);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -166,7 +178,7 @@ const QuizPage = () => {
                 <Button
                   onClick={() => setOpen(true)}
                   variant={"outline"}
-                  className="h-10 has-[>svg]:px-4"
+                  className="h-10 has-[>svg]:px-4 cursor-pointer"
                 >
                   <IoCloseOutline size={16} />
                 </Button>
@@ -186,14 +198,14 @@ const QuizPage = () => {
                 <AlertDialogFooter className="gap-11">
                   <Button
                     onClick={() => setOpen(false)}
-                    className="w-[calc(50%-22px)] h-10"
+                    className="w-[calc(50%-22px)] h-10 cursor-pointer"
                   >
                     Go back
                   </Button>
                   <Button
                     onClick={cancelAndRestartQuiz}
                     variant={"outline"}
-                    className="w-[calc(50%-22px)] h-10"
+                    className="w-[calc(50%-22px)] h-10 cursor-pointer"
                   >
                     Cancel quiz
                   </Button>
@@ -202,6 +214,9 @@ const QuizPage = () => {
             </AlertDialog>
           </div>
 
+          <div>
+            {min}:{sec}
+          </div>
           <div className="w-full bg-background rounded-lg p-7 border border-border">
             {isLoading && (
               <div className="h-fit flex justify-center">
@@ -235,7 +250,7 @@ const QuizPage = () => {
                           }
                           key={opt}
                           variant={"outline"}
-                          className="w-auto min-h-10 h-auto whitespace-pre-wrap"
+                          className="w-auto min-h-10 h-auto whitespace-pre-wrap cursor-pointer"
                         >
                           {opt}
                         </Button>
@@ -296,13 +311,20 @@ const QuizPage = () => {
             </div>
 
             <div className="flex justify-between">
-              <Button onClick={restartQuizHandler} variant={"outline"}>
+              <Button
+                onClick={restartQuizHandler}
+                variant={"outline"}
+                size={"lg"}
+                className="cursor-pointer"
+              >
                 <RxReload size={16} />
                 Restart quiz
               </Button>
               <Button
                 onClick={() => saveQuizScoreHandler(quizScores)}
                 disabled={loading}
+                size={"lg"}
+                className="cursor-pointer"
               >
                 <LuBookmark size={16} />
                 Save and leave

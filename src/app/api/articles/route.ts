@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async () => {
   const articles = await query("SELECT * FROM articles");
-  return NextResponse.json({ data: articles }, { status: 200 });
+
+  return NextResponse.json({ data: articles.rows }, { status: 200 });
 };
 
 export const POST = async (request: NextRequest) => {
