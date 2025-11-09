@@ -5,7 +5,6 @@ import { useRouter, useParams } from "next/navigation";
 import { useArticle } from "@/app/_hooks/use-article";
 import { ArticleType } from "@/lib/types";
 import { PiBookOpen } from "react-icons/pi";
-// import { AiOutlineLoading } from "react-icons/ai";
 import { LuLoaderCircle } from "react-icons/lu";
 
 const ArticlePage = () => {
@@ -59,19 +58,18 @@ const ArticlePage = () => {
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
-      <div className="bg-background max-w-214 flex flex-col p-7 mt-12 mx-64 rounded-lg h-fit gap-5 text-muted-foreground border border-border">
+      <div className="bg-background flex flex-col p-7 mt-26 mx-64 rounded-lg h-fit gap-5 text-foreground font-semibold border border-border">
         <div className="flex flex-col gap-5">
-          <div className="flex gap-2 items-center text-2xl leading-8 font-semibold text-foreground">
+          <div className="flex gap-2 items-center">
             <img src="/article-icon.svg" alt="" className="w-6 h-6" />
-            <div>Article Quiz Generator</div>
+            <div className="text-2xl leading-8">Article Quiz Generator</div>
           </div>
 
           <div className="flex flex-col gap-2 text-sm leading-5">
             <div className="flex gap-1 items-center">
               <PiBookOpen size={16} className="text-foreground" />
-              <Label className="font-semibold">Summarized content</Label>
+              <Label className="text-[#737373]">Summarized content</Label>
             </div>
-
             <>
               {!selectedArticle && (
                 <div className="flex justify-center items-center">
@@ -79,26 +77,23 @@ const ArticlePage = () => {
                 </div>
               )}
             </>
-
-            <div className="text-2xl leading-8 font-semibold text-foreground">
-              {selectedArticle?.title}
-            </div>
-
-            <div className="text-foreground">{selectedArticle?.summary}</div>
+            <div className="text-2xl leading-8">{selectedArticle?.title}</div>
+            <div className="font-normal">{selectedArticle?.summary}</div>
           </div>
 
           <div className="flex justify-between">
             <Button
               variant={"outline"}
-              className="h-10 text-secondary-foreground"
+              size={"lg"}
+              className="px-4 text-secondary-foreground"
             >
               See content
             </Button>
-
             <Button
               disabled={loading || !selectedArticle}
+              size={"lg"}
               onClick={() => generateQuiz(selectedArticle?.id)}
-              className="h-10"
+              className="px-4"
             >
               {loading && <LuLoaderCircle className="animate-spin" />}
               Take a quiz

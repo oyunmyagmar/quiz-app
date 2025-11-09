@@ -14,8 +14,9 @@ export const POST = async (request: NextRequest) => {
     `INSERT INTO articles(title, content, summary) VALUES('${title}', '${content}', '${summary}') RETURNING *`
   );
 
+  // console.log({ article }, "article");
   return NextResponse.json({
     message: "Article added to DB successfully",
-    data: article,
+    data: article.rows[0],
   });
 };

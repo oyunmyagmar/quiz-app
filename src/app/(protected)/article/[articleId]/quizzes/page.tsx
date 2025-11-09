@@ -1,6 +1,18 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui";
+import {
+  Button,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+  AlertDialogOverlay,
+} from "@/components/ui";
 import { IoCloseOutline, IoCloseCircleOutline } from "react-icons/io5";
 import { LuCircleCheck, LuBookmark, LuLoaderCircle } from "react-icons/lu";
 import { RxReload } from "react-icons/rx";
@@ -33,6 +45,7 @@ const QuizPage = () => {
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
   let userScore = 0;
   const router = useRouter();
+  const [open, setOpen] = useState<boolean>(false);
 
   quizScores.forEach((item) => (userScore = userScore + item.quizScore));
   console.log({ quizScores });
@@ -128,6 +141,11 @@ const QuizPage = () => {
     }
   };
 
+  const cancelAndRestartQuiz = () => {
+    setOpen(false);
+    restartQuizHandler();
+  };
+
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
       {step < articleQuizzes.length ? (
@@ -143,10 +161,45 @@ const QuizPage = () => {
               </div>
             </div>
 
-            {"adlskfjendess alert dialog"}
-            <Button variant={"outline"} className="h-10 has-[>svg]:px-4">
-              <IoCloseOutline size={16} />
-            </Button>
+            <AlertDialog open={open} onOpenChange={setOpen}>
+              <AlertDialogTrigger asChild>
+                <Button
+                  onClick={() => setOpen(true)}
+                  variant={"outline"}
+                  className="h-10 has-[>svg]:px-4"
+                >
+                  <IoCloseOutline size={16} />
+                </Button>
+              </AlertDialogTrigger>
+
+              <AlertDialogContent className="sm:max-w-[450px] border-0 rounded-xl gap-6">
+                <AlertDialogHeader className="gap-1.5">
+                  <AlertDialogTitle className="text-2xl leading-8 text-foreground">
+                    Are you sure?
+                  </AlertDialogTitle>
+                  <AlertDialogDescription className="leading-5 text-[#B91C1C]">
+                    If you press 'Cancel', this quiz will restart from the
+                    beginning.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+
+                <AlertDialogFooter className="gap-11">
+                  <Button
+                    onClick={() => setOpen(false)}
+                    className="w-[calc(50%-22px)] h-10"
+                  >
+                    Go back
+                  </Button>
+                  <Button
+                    onClick={cancelAndRestartQuiz}
+                    variant={"outline"}
+                    className="w-[calc(50%-22px)] h-10"
+                  >
+                    Cancel quiz
+                  </Button>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           <div className="w-full bg-background rounded-lg p-7 border border-border">

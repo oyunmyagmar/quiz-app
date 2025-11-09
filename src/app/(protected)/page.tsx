@@ -2,7 +2,6 @@
 import React, { useState } from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui";
 import { useRouter } from "next/navigation";
-// import { AiOutlineLoading } from "react-icons/ai";
 import { cleanText } from "@/lib/utils/get-clean-text";
 import { LuLoaderCircle } from "react-icons/lu";
 
@@ -21,13 +20,10 @@ const Homepage = () => {
       body: JSON.stringify({ articleTitle, articleContent }),
     });
 
+    if (!response.ok) {
+      alert("Failed to generate summary!");
+    }
     const result = await response.json();
-    // console.log(result, "RESULT");
-    // if (result.text) {
-    //   setSummarizedContent(result.text); // uur hudas der harulah
-    // } else {
-    //   alert("Failed to generate summary");
-    // }
 
     const cleanedAricleTitle = cleanText(articleTitle);
     const cleanedArticleContent = cleanText(articleContent);
@@ -44,31 +40,31 @@ const Homepage = () => {
     });
 
     if (res.ok) {
-      alert("Article added to DB successfully");
       const { data } = await res.json();
-      const articleData = data.rows[0];
-      // console.log(articleData.id, "articleDataID");
       setLoading(false);
       setArticleTitle("");
       setArticleContent("");
-      if (articleData?.id) {
-        router.push(`/article/${articleData.id}`);
+      alert("Article added to DB successfully");
+      if (data?.id) {
+        router.push(`/article/${data.id}`);
       }
     } else {
       alert("Failed to add article to DB!");
+      setLoading(false);
     }
   };
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
-      <div className="bg-background max-w-214 flex flex-col p-7 mt-12 mx-64 rounded-lg h-fit gap-5 text-muted-foreground border border-border">
+      <div className="bg-background flex flex-col p-7 mt-26 mx-64 rounded-lg h-fit gap-5 text-muted-foreground border border-border">
         <div className="flex flex-col gap-2">
-          <div className="flex gap-2 items-center text-2xl leading-8 font-semibold text-foreground">
+          <div className="flex gap-2 items-center">
             <img src="/article-icon.svg" alt="" className="w-6 h-6" />
-            <div>Article Quiz Generator</div>
+            <div className="text-2xl leading-8 font-semibold text-foreground">
+              Article Quiz Generator
+            </div>
           </div>
-
-          <div className="text-base leading-[19.2px]">
+          <div className="text-base leading-[19px]">
             Paste your article below to generate a summarize and quiz question.
             Your articles will saved in the sidebar for future reference.
           </div>
@@ -84,7 +80,7 @@ const Homepage = () => {
               value={articleTitle}
               onChange={(e) => setArticleTitle(e.target.value)}
               placeholder="Enter a title for your article..."
-              className="py-2 text-foreground"
+              className="h-10 py-2 text-foreground"
             />
           </div>
 
@@ -93,7 +89,6 @@ const Homepage = () => {
               <img src="/article-note.svg" alt="" className="px-0.5 py-[px]" />
               <Label className="font-semibold">Article Content</Label>
             </div>
-
             <Textarea
               value={articleContent}
               onChange={(e) => setArticleContent(e.target.value)}
@@ -105,7 +100,8 @@ const Homepage = () => {
           <div className="flex justify-end">
             <Button
               onClick={generateSummary}
-              className="w-fit h-10"
+              size={"lg"}
+              className="w-fit px-4"
               disabled={!articleTitle || !articleContent}
             >
               {loading && <LuLoaderCircle className="animate-spin" />}
