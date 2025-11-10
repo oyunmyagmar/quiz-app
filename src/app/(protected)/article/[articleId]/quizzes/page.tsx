@@ -15,10 +15,7 @@ import { LuCircleCheck, LuBookmark, LuLoaderCircle } from "react-icons/lu";
 import { RxReload } from "react-icons/rx";
 import { useParams, useRouter } from "next/navigation";
 import { QuizType } from "@/lib/types";
-
-// interface QuizParams {
-//   articleId: string;
-// }
+import { useQuiz } from "@/app/_hooks/use-quiz";
 
 interface QuizResultType {
   question: string;
@@ -34,6 +31,8 @@ interface QuizScoresType {
 
 const QuizPage = () => {
   const { articleId } = useParams<{ articleId: string }>();
+  const { selectedArticleQuizzes } = useQuiz();
+  // const [selectedQuizzes, setSelectedQuizzes] = useState<QuizType[]>([]);
   const [allQuizzes, setAllQuizzes] = useState<QuizType[]>([]);
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
@@ -43,32 +42,45 @@ const QuizPage = () => {
   const [open, setOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  let [min, setMin] = useState<number>(0);
-  let [sec, setSec] = useState<number>(0);
+  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
+  const [min, setMin] = useState<number>(0);
+  const [sec, setSec] = useState<number>(0);
 
+  console.log({ selectedArticleQuizzes }, "selectedArticleQuizzes");
   quizScores.forEach((item) => (userScore = userScore + item.quizScore));
   console.log({ quizScores });
   console.log({ userScore });
 
-  useEffect(() => {
-    if (articleId) {
-      const getAllQuizzes = async () => {
-        setIsLoading(true);
-        const response = await fetch(`/api/article/${articleId}/quizzes`);
-        const { data } = await response.json();
-
-        if (data) {
-          setAllQuizzes(data);
-        }
-        setIsLoading(false);
-      };
-      getAllQuizzes();
-    }
-  }, [articleId]);
-
-  const articleQuizzes = allQuizzes.filter(
-    (item) => item.articleid === articleId
+  const selectedQuizzes = selectedArticleQuizzes.filter(
+    (item) => item.id === articleId
   );
+
+  // useEffect(() => {
+  //   if (
+  //     selectedArticleQuizzes.filter((selArtQuiz) => selArtQuiz.id === articleId)
+  //   ) {
+  //     setSelectedQuizzes(selectedArticleQuizzes);
+  //   }
+  // }, [selectedArticleQuizzes, articleId]);
+  // useEffect(() => {
+  //   if (articleId) {
+  //     const getAllQuizzes = async () => {
+  //       setIsLoading(true);
+  //       const response = await fetch(`/api/article/${articleId}/quizzes`);
+  //       const { data } = await response.json();
+
+  //       if (data) {
+  //         setAllQuizzes(data);
+  //       }
+  //       setIsLoading(false);
+  //     };
+  //     getAllQuizzes();
+  //   }
+  // }, [articleId]);
+
+  // const articleQuizzes = allQuizzes.filter(
+  //   (item) => item.articleid === articleId
+  // );
   // console.log({ articleQuizzes });
 
   const quizStepScoreHandler = (
@@ -115,8 +127,6 @@ const QuizPage = () => {
 
     setStep((prev) => prev + 1);
   };
-  // console.log({ correctAnswer });
-  // console.log({ quizResult });
 
   const restartQuizHandler = () => {
     setStep(0);
@@ -126,7 +136,7 @@ const QuizPage = () => {
 
   const saveQuizScoreHandler = async (quizScores: QuizScoresType[]) => {
     setLoading(true);
-    const res = await fetch(`/api/article/${articleId}/quizzes/score`, {
+    const res = await fetch(`/api/article/${articleId}/quizzes/scores`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ quizScores }),
@@ -146,21 +156,29 @@ const QuizPage = () => {
     restartQuizHandler();
   };
 
-  // useEffect(() => {
-  //   setInterval(() => {
-  //     if (step === 0) {
-  //       setSec((prev) => prev + 1);
-
-  //       if (sec > 60) {
-  //         setMin((prev) => prev + 1);
-  //       }
+  // function handleTimer() {
+  //   setSec((sec) => {
+  //     console.log(sec);
+  //     if (sec >= 60) {
+  //       setMin((prevMin) => prevMin + 1);
+  //       return 0;
   //     }
-  //   }, 1000);
-  // }, [step === 0]);
+  //     return sec + 1;
+  //   });
+  // }
+
+  // useEffect(() => {
+  //   if (step === 0) {
+  //     const interval = setInterval(handleTimer, 1000);
+  //     setIntervalId(interval);
+  //   } else if (step > 5) {
+  //     return () => clearInterval(intervalId);
+  //   }
+  // }, []);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
-      {step < articleQuizzes.length ? (
+      {step < selectedQuizzes.length ? (
         <div className="min-w-[428px] flex flex-col mt-30 mx-50 gap-6 text-foreground">
           <div className="flex justify-between">
             <div className="flex flex-col gap-2">
@@ -224,7 +242,7 @@ const QuizPage = () => {
               </div>
             )}
 
-            {articleQuizzes.map((quiz, i) => {
+            {selectedQuizzes.map((quiz, i) => {
               return (
                 step === i && (
                   <div key={quiz.id} className="flex flex-col gap-5">
@@ -278,7 +296,7 @@ const QuizPage = () => {
             <div className="text-2xl leading-8 font-semibold">
               Your score: {userScore}
               <span className="text-base leading-6 font-medium text-muted-foreground">
-                /{articleQuizzes.length}
+                /{selectedQuizzes.length}
               </span>
             </div>
 

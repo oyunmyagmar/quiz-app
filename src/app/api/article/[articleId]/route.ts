@@ -1,4 +1,5 @@
 import { query } from "@/lib/connectDb";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async (
@@ -7,10 +8,16 @@ export const GET = async (
 ) => {
   const { articleId } = await params;
 
-  const article = await query(
-    `SELECT * FROM articles WHERE id= '${articleId}'`
-  );
-  const articleData = article.rows[0];
-  // console.log({ articleData }, "articleData");
-  return NextResponse.json({ data: articleData }, { status: 200 });
+  // const article = await query(
+  //   `SELECT * FROM articles WHERE id= '${articleId}'`
+  // );
+
+  const article = await prisma.articles.findUnique({
+    where: {
+      id: articleId,
+    },
+  });
+
+  // console.log({ article }, "SELECTED ARTICLE GET");
+  return NextResponse.json({ data: article }, { status: 200 });
 };

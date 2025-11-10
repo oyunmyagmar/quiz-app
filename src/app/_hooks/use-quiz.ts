@@ -1,13 +1,26 @@
 import { QuizType } from "@/lib/types";
-import { useState } from "react";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export const useQuiz = () => {
-  const [allQuizzes, setAllQuizzes] = useState<QuizType[]>([]);
+  const [selectedArticleQuizzes, setSelectedArticleQuizzes] = useState<
+    QuizType[]
+  >([]);
 
-  const getAllQuizzes = async () => {
+  const { articleId } = useParams<{ articleId: string }>();
+  const getSelectedArticleQuizzes = async () => {
     const resultData = await fetch(`/api/article/${articleId}/quizzes`);
     const { data } = await resultData.json();
 
     console.log(data, "DATADATA");
+
+    if (data) {
+      setSelectedArticleQuizzes(data);
+    }
   };
+  useEffect(() => {
+    getSelectedArticleQuizzes();
+  }, []);
+
+  return { selectedArticleQuizzes };
 };

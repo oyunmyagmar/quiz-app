@@ -20,10 +20,6 @@ export const useArticle = () => {
   };
 
   const getSelectedArticle = async () => {
-    // if (!articleId) {
-    //   return;
-    // }
-
     const resData = await fetch(`/api/article/${articleId}`);
     const { data } = await resData.json();
 
@@ -34,7 +30,9 @@ export const useArticle = () => {
 
   useEffect(() => {
     getAllArticles();
-    getSelectedArticle();
+    if (articleId) {
+      getSelectedArticle();
+    }
   }, []);
 
   return {

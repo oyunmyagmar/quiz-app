@@ -47,6 +47,7 @@ const Homepage = () => {
 
     if (res.ok) {
       const { data } = await res.json();
+      // console.log({ data }, "CREATED ARTICLE DAATTAA");
       setLoading(false);
       setArticleTitle("");
       setArticleContent("");
@@ -107,7 +108,7 @@ const Homepage = () => {
               onClick={generateSummary}
               size={"lg"}
               className="w-fit px-4"
-              disabled={!articleTitle || !articleContent}
+              disabled={!articleTitle || !articleContent || loading}
             >
               {loading && <LuLoaderCircle className="animate-spin" />}
               Generate summary

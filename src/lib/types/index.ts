@@ -17,3 +17,22 @@ export type QuizType = {
   createdat: string;
   updatedat: string;
 };
+
+export type ScoreType = {
+  id: string;
+  quizid: string;
+  userid?: string;
+  score: number;
+  createdat: string;
+  updatedat: string;
+};
+
+export type AttemptType = {
+  id: string;
+  quizid: string;
+  userid?: string;
+  score: number;
+  timeSpent: number;
+  createdat: string;
+  updatedat: string;
+};

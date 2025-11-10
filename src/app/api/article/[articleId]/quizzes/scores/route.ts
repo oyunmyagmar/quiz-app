@@ -1,4 +1,5 @@
 import { query } from "@/lib/connectDb";
+import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -7,11 +8,9 @@ export async function POST(request: NextRequest) {
 
   {
     quizScores.map(async (item: any) => {
-      const score = await query(
-        `INSERT INTO scores(quizid, score) VALUES('${
-          item.quizQuestionId
-        }', '${Number(item.quizScore)}')`
-      );
+      const score = await prisma.scores.create({
+        data: { quizid: item.quizQuestionId, score: item.quizScore },
+      });
     });
   }
 
