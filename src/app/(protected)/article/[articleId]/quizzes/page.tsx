@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { LuLoaderCircle } from "react-icons/lu";
 import { useParams, useRouter } from "next/navigation";
@@ -15,10 +15,14 @@ const QuizPage = () => {
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
   const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const [intervalId, setIntervalId] = useState<NodeJS.Timeout>();
   const [min, setMin] = useState<number>(0);
   const [sec, setSec] = useState<number>(0);
+  let timeSpent = 0;
+
+  if (min > 0) {
+    timeSpent = min * 60 + sec;
+  } else timeSpent = sec;
+  console.log({ timeSpent });
 
   const quizStepScoreHandler = (
     quizQuestion: string,
@@ -66,27 +70,26 @@ const QuizPage = () => {
     setStep(0);
     setQuizResult([]);
     setQuizScores([]);
+    setSec(0);
+    setMin(0);
   };
-
-  // function handleTimer() {
-  //   setSec((sec) => {
-  //     console.log(sec);
-  //     if (sec >= 60) {
-  //       setMin((prevMin) => prevMin + 1);
-  //       return 0;
-  //     }
-  //     return sec + 1;
-  //   });
-  // }
 
   // useEffect(() => {
   //   if (step === 0) {
-  //     const interval = setInterval(handleTimer, 1000);
-  //     setIntervalId(interval);
-  //   } else if (step > 5) {
-  //     return () => clearInterval(intervalId);
-  //   }
-  // }, []);
+  //     const interval = setInterval(() => {
+  //       setSec((prevSec) => {
+  //         if (prevSec >= 59) {
+  //           setMin((prevMin) => prevMin + 1);
+  //           return 0;
+  //         }
+  //         return prevSec + 1;
+  //       });
+  //     }, 1000);
+  //     return () => {
+  //       clearInterval(interval);
+  //     };
+  //   } else if (step >= selectedArticleQuizzes.length - 1) return;
+  // }, [selectedArticleQuizzes.length]);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
