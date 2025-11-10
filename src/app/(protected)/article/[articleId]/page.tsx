@@ -11,8 +11,7 @@ const ArticlePage = () => {
   const { articleId } = useParams<{ articleId: string }>();
   const { selectedArticle } = useArticle();
   const [selectedArticleId, setSelectedArticleId] = useState<string>("");
-  const [selectedArticleContent, setSelectedArticleContent] =
-    useState<string>("");
+  const [selectedArticleSum, setSelectedArticleSum] = useState<string>("");
   const router = useRouter();
 
   useEffect(() => {
@@ -20,12 +19,12 @@ const ArticlePage = () => {
       setSelectedArticleId(selectedArticle.id);
     }
     if (selectedArticle) {
-      setSelectedArticleContent(selectedArticle.content);
+      setSelectedArticleSum(selectedArticle.summary);
     }
   }, [selectedArticle, articleId]);
 
   const generateQuiz = async (articleId: string) => {
-    if (!selectedArticleContent || !articleId) {
+    if (!selectedArticleSum || !articleId) {
       alert("Article content or id is required");
       return;
     }
@@ -35,7 +34,7 @@ const ArticlePage = () => {
     const response = await fetch(`/api/article/${articleId}/quizzes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ selectedArticleContent, articleId }),
+      body: JSON.stringify({ selectedArticleSum, articleId }),
     });
 
     if (response.ok) {

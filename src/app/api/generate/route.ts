@@ -16,9 +16,14 @@ export async function POST(request: NextRequest) {
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: `Please provide a concise summary of the following article(max 50 words):
-     Title: ${articleTitle}
-     Content: ${articleContent}
+    contents: `Please provide a concise, natural summary of the following article: 
+    Title: ${articleTitle}
+    Content: ${articleContent}  
+     The summary should:
+    - Focus on the article's core message and main points.
+    - Flow naturally as a paragraph, not as a list or outline.
+    - Contain enough meaningful details to allow relevant questions to be generated from it later.
+    - Maximum length: 85 words
      
      Summary:`,
   });
