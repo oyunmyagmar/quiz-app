@@ -36,3 +36,14 @@ export type AttemptType = {
   createdat: string;
   updatedat: string;
 };
+
+export type QuizResultType = {
+  question: string;
+  userAnswerString?: string;
+  correctAnswerString?: string;
+};
+
+export type QuizScoresType = {
+  quizQuestionId: string;
+  quizScore: number;
+};

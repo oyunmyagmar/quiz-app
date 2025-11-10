@@ -12,7 +12,7 @@ export const useQuiz = () => {
     const resultData = await fetch(`/api/article/${articleId}/quizzes`);
     const { data } = await resultData.json();
 
-    console.log(data, "DATADATA");
+    // console.log({ data }, "datadata");
 
     if (data) {
       setSelectedArticleQuizzes(data);

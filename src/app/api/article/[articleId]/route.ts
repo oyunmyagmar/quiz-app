@@ -12,7 +12,7 @@ export const GET = async (
   //   `SELECT * FROM articles WHERE id= '${articleId}'`
   // );
 
-  const article = await prisma.articles.findUnique({
+  const article = await prisma.articles.findFirst({
     where: {
       id: articleId,
     },

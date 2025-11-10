@@ -12,18 +12,15 @@ export const GET = async (
   { params }: { params: Promise<{ articleId: string }> }
 ) => {
   const { articleId } = await params;
-  // const quizzes = await query("SELECT * FROM quizzes"); // negiig avah
 
-  const quiz = await prisma.quizzes.findFirst({
+  const quizCollection = await prisma.quizzes.findMany({
     where: {
       articleid: articleId,
     },
   });
 
-  // const quizzes = await prisma.quizzes.findMany();
-
-  console.log({ quiz });
-  return NextResponse.json({ data: quiz }, { status: 200 });
+  // console.log({ quizCollection });
+  return NextResponse.json({ data: quizCollection }, { status: 200 });
 };
 
 export async function POST(request: NextRequest) {
@@ -50,10 +47,10 @@ export async function POST(request: NextRequest) {
   });
 
   const generatedQuiz = response.text;
-  console.log("generatedQuiz", generatedQuiz, "generatedQuiz");
+  // console.log("generatedQuiz", generatedQuiz, "generatedQuiz");
 
   const quizObj = parseJsonBlockSafe(generatedQuiz!);
-  console.log("quizObj", quizObj, "quizObj");
+  // console.log("quizObj", quizObj, "quizObj");
   if (!quizObj) {
     return NextResponse.json(
       { error: "Failed to generate quiz." },
@@ -71,7 +68,7 @@ export async function POST(request: NextRequest) {
           articleid: articleId,
         },
       });
-      console.log("QUIZ", { quiz }, "QUIZ");
+      // console.log("QUIZ", { quiz }, "QUIZ");
     });
     console.log("Quiz added to DB successfully");
   } catch (error) {
@@ -83,25 +80,3 @@ export async function POST(request: NextRequest) {
     data: quizObj,
   });
 }
-
-// for (const item of quizObj) {
-//   // Escape single quotes in question
-//   const safeQuestion = item.question.replace(/'/g, "''");
-//   // Escape single quotes and double quotes in options, then make PG array literal
-//   const pgArray = `{${item.options
-//     .map((opt: string) => `"${opt.replace(/"/g, '\\"').replace(/'/g, "''")}"`)
-//     .join(",")}}`;
-
-//   try {
-//     const quiz = await query(
-//       `INSERT INTO quizzes (question, options, answer, articleId)
-//       VALUES ('${safeQuestion}', '${pgArray}', '${item.answer}', '${articleId}')`
-//     );
-//     console.log("Quiz added to DB successfully");
-//   } catch (error) {
-//     console.error("Error while adding quiz to DB", error, item);
-//   }
-// }
-
-// console.log("generatedQuiz", generatedQuiz, "generatedQuiz");
-// return NextResponse.json({ text: generatedQuiz });
