@@ -30,19 +30,18 @@ const QuizPage = () => {
     quizAnswerI: string,
     quiz: QuizType
   ) => {
-    const quizTrueAnswer = quiz.options.find(
-      (opt, i) => JSON.stringify(i) === quizAnswerI
-    );
-    const clientAnswer = quiz.options.find(
-      (opt, i) => JSON.stringify(i) === selectedAnswerI
-    );
+    const quizCorrectAnswer = quiz.options[JSON.parse(quizAnswerI)];
+
+    const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
+
+    console.log("QUIZ ANSWER", Number(quizAnswerI));
 
     const newQuizResult = [
       ...quizResult,
       {
         question: quizQuestion,
         userAnswerString: clientAnswer,
-        correctAnswerString: quizTrueAnswer,
+        correctAnswerString: quizCorrectAnswer,
       },
     ];
     if (newQuizResult) {

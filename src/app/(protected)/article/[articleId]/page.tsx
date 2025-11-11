@@ -5,26 +5,28 @@ import { useRouter, useParams } from "next/navigation";
 import { useArticle } from "@/app/_hooks/use-article";
 import { PiBookOpen } from "react-icons/pi";
 import { LuLoaderCircle } from "react-icons/lu";
+import { ArticleType } from "@/lib/types";
 
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { articleId } = useParams<{ articleId: string }>();
-  const { selectedArticle } = useArticle();
-  const [selectedArticleId, setSelectedArticleId] = useState<string>("");
-  const [selectedArticleSum, setSelectedArticleSum] = useState<string>("");
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType>();
   const router = useRouter();
 
+  const getSelectedArticle = async () => {
+    const resData = await fetch(`/api/article/${articleId}`);
+    const { data } = await resData.json();
+
+    if (data) {
+      setSelectedArticle(data);
+    }
+  };
   useEffect(() => {
-    if (selectedArticle?.id === articleId) {
-      setSelectedArticleId(selectedArticle.id);
-    }
-    if (selectedArticle) {
-      setSelectedArticleSum(selectedArticle.summary);
-    }
-  }, [selectedArticle, articleId]);
+    getSelectedArticle();
+  }, []);
 
   const generateQuiz = async (articleId: string) => {
-    if (!selectedArticleSum || !articleId) {
+    if (!selectedArticle?.summary || !articleId) {
       alert("Article content or id is required");
       return;
     }
@@ -34,13 +36,13 @@ const ArticlePage = () => {
     const response = await fetch(`/api/article/${articleId}/quizzes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ selectedArticleSum, articleId }),
+      body: JSON.stringify({ summary: selectedArticle.summary, articleId }),
     });
 
     if (response.ok) {
-      setLoading(false);
       alert("Quiz added to DB successfully");
       router.push(`/article/${articleId}/quizzes`);
+      setLoading(false);
     } else {
       alert("Error while generating and adding quiz to DB!");
     }
@@ -67,12 +69,12 @@ const ArticlePage = () => {
                 </div>
               )}
             </>
-            {selectedArticle && selectedArticleId && (
+            {selectedArticle && (
               <div className="flex flex-col gap-2">
                 <div className="text-2xl leading-8">
-                  {selectedArticle.title}
+                  {selectedArticle?.title}
                 </div>
-                <div className="font-normal">{selectedArticle.summary}</div>
+                <div className="font-normal">{selectedArticle?.summary}</div>
               </div>
             )}
           </div>
@@ -86,9 +88,9 @@ const ArticlePage = () => {
               See content
             </Button>
             <Button
-              disabled={loading || !selectedArticle || !selectedArticleId}
+              disabled={loading || !selectedArticle || !articleId}
               size={"lg"}
-              onClick={() => generateQuiz(selectedArticleId)}
+              onClick={() => generateQuiz(articleId)}
               className="px-4"
             >
               {loading && <LuLoaderCircle className="animate-spin" />}

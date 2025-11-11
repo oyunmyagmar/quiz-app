@@ -24,9 +24,9 @@ export const GET = async (
 };
 
 export async function POST(request: NextRequest) {
-  const { selectedArticleSum, articleId } = await request.json();
+  const { summary, articleId } = await request.json();
 
-  if (!selectedArticleSum || !articleId) {
+  if (!summary || !articleId) {
     return NextResponse.json(
       { error: "Missing required fields!" },
       { status: 400 }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: `Generate 5 multiple choice questions based on this article: ${selectedArticleSum}. Return the response in this exact JSON format:
+    contents: `Generate 5 multiple choice questions based on this article: ${summary}. Return the response in this exact JSON format:
       [
         {
           "question": "Question text here",
@@ -47,10 +47,8 @@ export async function POST(request: NextRequest) {
   });
 
   const generatedQuiz = response.text;
-  // console.log("generatedQuiz", generatedQuiz, "generatedQuiz");
 
   const quizObj = parseJsonBlockSafe(generatedQuiz!);
-  // console.log("quizObj", quizObj, "quizObj");
   if (!quizObj) {
     return NextResponse.json(
       { error: "Failed to generate quiz." },
@@ -64,7 +62,7 @@ export async function POST(request: NextRequest) {
         data: {
           question: item.question,
           options: item.options,
-          answer: item.answer,
+          answer: item.answer.toString(),
           articleid: articleId,
         },
       });

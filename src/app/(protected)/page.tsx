@@ -4,11 +4,14 @@ import { Button, Input, Label, Textarea } from "@/components/ui";
 import { useRouter } from "next/navigation";
 import { cleanText } from "@/lib/utils/get-clean-text";
 import { LuLoaderCircle } from "react-icons/lu";
+import { toast } from "sonner";
+import { useArticle } from "../_hooks/use-article";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
   const [articleContent, setArticleContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const { refetchGetAllArticles } = useArticle();
   const router = useRouter();
 
   const generateSummary = async () => {
@@ -51,7 +54,8 @@ const Homepage = () => {
       setLoading(false);
       setArticleTitle("");
       setArticleContent("");
-      alert("Article added to DB successfully");
+      toast("Article added to DB successfully");
+      // enenii araas refetchGetAllArticles avch bolno esvel useContext ashiglah
       if (data?.id) {
         router.push(`/article/${data.id}`);
       }

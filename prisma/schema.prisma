@@ -17,6 +17,7 @@ model articles {
   createdat DateTime? @default(now()) @db.Timestamptz(6)
   updatedat DateTime? @default(now()) @db.Timestamptz(6)
   users     users?    @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quizzes   quizzes[]
 }
 
 model attempts {
@@ -55,6 +56,7 @@ model quizzes {
   createdat DateTime?  @default(now()) @db.Timestamptz(6)
   updatedat DateTime?  @default(now()) @db.Timestamptz(6)
   attempts  attempts[]
+  articles  articles   @relation(fields: [articleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   scores    scores[]
 }
 
@@ -87,4 +89,10 @@ model users {
   articles  articles[]
   attempts  attempts[]
   scores    scores[]
+}
+
+model mocksummary {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  text    String?
+  summary String?
 }

@@ -5,7 +5,8 @@ import { Button } from "@/components/ui";
 import { LuCircleCheck, LuBookmark } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
+// quiz props-oor yavulah endes correct answer gargah
 
 export const QuizCompletedComp = ({
   selectedArticleQuizzes,
