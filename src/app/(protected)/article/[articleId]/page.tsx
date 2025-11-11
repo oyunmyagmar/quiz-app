@@ -1,33 +1,39 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button, Label } from "@/components/ui";
+import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
 import { useRouter, useParams } from "next/navigation";
-import { useArticle } from "@/app/_hooks/use-article";
 import { PiBookOpen } from "react-icons/pi";
-import { LuLoaderCircle } from "react-icons/lu";
+import { LuLoaderCircle, LuChevronLeft } from "react-icons/lu";
 import { ArticleType } from "@/lib/types";
+import { toast } from "sonner";
+import { SeeMoreContent } from "@/app/_components";
 
 const ArticlePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const { articleId } = useParams<{ articleId: string }>();
-  const [selectedArticle, setSelectedArticle] = useState<ArticleType>();
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
+    null
+  );
   const router = useRouter();
 
   const getSelectedArticle = async () => {
-    const resData = await fetch(`/api/article/${articleId}`);
-    const { data } = await resData.json();
+    const response = await fetch(`/api/article/${articleId}`);
 
-    if (data) {
-      setSelectedArticle(data);
+    if (response.ok) {
+      const { data } = await response.json();
+      if (data) {
+        setSelectedArticle(data);
+      }
     }
   };
+
   useEffect(() => {
     getSelectedArticle();
   }, []);
 
   const generateQuiz = async (articleId: string) => {
     if (!selectedArticle?.summary || !articleId) {
-      alert("Article content or id is required");
+      toast.warning("Article summary or id is required");
       return;
     }
 
@@ -36,22 +42,34 @@ const ArticlePage = () => {
     const response = await fetch(`/api/article/${articleId}/quizzes`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ summary: selectedArticle.summary, articleId }),
+      body: JSON.stringify({
+        selectedArticleSummary: selectedArticle.summary,
+        articleId,
+      }),
     });
 
     if (response.ok) {
-      alert("Quiz added to DB successfully");
-      router.push(`/article/${articleId}/quizzes`);
+      toast.success("Quiz added to DB successfully");
       setLoading(false);
+      router.push(`/article/${articleId}/quizzes`);
     } else {
-      alert("Error while generating and adding quiz to DB!");
+      toast.error("Error while generating or adding quiz to DB!");
     }
   };
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
-      <div className="bg-background flex flex-col p-7 mt-26 mx-64 rounded-lg h-fit gap-5 text-foreground font-semibold border border-border">
-        <div className="flex flex-col gap-5">
+      <div className="mt-26 flex flex-col mx-64 gap-6">
+        <Button
+          onClick={() => router.push("/")}
+          variant={"outline"}
+          size={"lg"}
+          className="w-fit"
+        >
+          <LuChevronLeft size={16} />
+        </Button>
+
+        <div className="bg-background flex flex-col p-7 rounded-lg h-fit gap-5 text-foreground font-semibold border border-border">
           <div className="flex gap-2 items-center">
             <img src="/article-icon.svg" alt="" className="w-6 h-6" />
             <div className="text-2xl leading-8">Article Quiz Generator</div>
@@ -80,18 +98,26 @@ const ArticlePage = () => {
           </div>
 
           <div className="flex justify-between">
-            <Button
-              variant={"outline"}
-              size={"lg"}
-              className="px-4 text-secondary-foreground"
-            >
-              See content
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant={"outline"}
+                  size={"lg"}
+                  className="px-4 text-secondary-foreground cursor-pointer"
+                >
+                  See content
+                </Button>
+              </DialogTrigger>
+              {selectedArticle && (
+                <SeeMoreContent selectedArticle={selectedArticle} />
+              )}
+            </Dialog>
+
             <Button
               disabled={loading || !selectedArticle || !articleId}
               size={"lg"}
               onClick={() => generateQuiz(articleId)}
-              className="px-4"
+              className="px-4 cursor-pointer"
             >
               {loading && <LuLoaderCircle className="animate-spin" />}
               Take a quiz

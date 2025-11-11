@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
     - Focus on the article's core message and main points.
     - Flow naturally as a paragraph, not as a list or outline.
     - Contain enough meaningful details to allow relevant questions to be generated from it later.
-    - Maximum length: 85 words
+    - Maximum length: 60 words
      
      Summary:`,
   });

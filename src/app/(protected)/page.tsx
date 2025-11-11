@@ -16,7 +16,7 @@ const Homepage = () => {
 
   const generateSummary = async () => {
     if (!articleTitle || !articleContent) {
-      alert("All fields are required!");
+      toast.warning("All fields are required!");
       return;
     }
 
@@ -29,7 +29,7 @@ const Homepage = () => {
     });
 
     if (!response.ok) {
-      alert("Failed to generate summary!");
+      toast.error("Failed to generate summary!");
     }
 
     const result = await response.json();
@@ -50,17 +50,16 @@ const Homepage = () => {
 
     if (res.ok) {
       const { data } = await res.json();
-      // console.log({ data }, "CREATED ARTICLE DAATTAA");
+      toast.success("Article added to DB successfully");
       setLoading(false);
       setArticleTitle("");
       setArticleContent("");
-      toast("Article added to DB successfully");
       // enenii araas refetchGetAllArticles avch bolno esvel useContext ashiglah
       if (data?.id) {
         router.push(`/article/${data.id}`);
       }
     } else {
-      alert("Failed to add article to DB!");
+      toast.error("Failed to add article to DB!");
     }
   };
 
@@ -111,7 +110,7 @@ const Homepage = () => {
             <Button
               onClick={generateSummary}
               size={"lg"}
-              className="w-fit px-4"
+              className="w-fit px-4 cursor-pointer"
               disabled={!articleTitle || !articleContent || loading}
             >
               {loading && <LuLoaderCircle className="animate-spin" />}

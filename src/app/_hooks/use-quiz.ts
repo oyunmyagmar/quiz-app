@@ -6,8 +6,8 @@ export const useQuiz = () => {
   const [selectedArticleQuizzes, setSelectedArticleQuizzes] = useState<
     QuizType[]
   >([]);
-
   const { articleId } = useParams<{ articleId: string }>();
+
   const getSelectedArticleQuizzes = async () => {
     const resultData = await fetch(`/api/article/${articleId}/quizzes`);
     const { data } = await resultData.json();

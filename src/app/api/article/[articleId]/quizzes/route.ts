@@ -24,9 +24,9 @@ export const GET = async (
 };
 
 export async function POST(request: NextRequest) {
-  const { summary, articleId } = await request.json();
+  const { selectedArticleSummary, articleId } = await request.json();
 
-  if (!summary || !articleId) {
+  if (!selectedArticleSummary || !articleId) {
     return NextResponse.json(
       { error: "Missing required fields!" },
       { status: 400 }
@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
-    contents: `Generate 5 multiple choice questions based on this article: ${summary}. Return the response in this exact JSON format:
+    contents: `Generate 5 multiple choice questions based on this article: ${selectedArticleSummary}. Return the response in this exact JSON format:
       [
         {
           "question": "Question text here",

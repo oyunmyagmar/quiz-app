@@ -13,7 +13,7 @@ const QuizPage = () => {
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
-  const router = useRouter();
+  // const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [min, setMin] = useState<number>(0);
   const [sec, setSec] = useState<number>(0);
@@ -31,10 +31,8 @@ const QuizPage = () => {
     quiz: QuizType
   ) => {
     const quizCorrectAnswer = quiz.options[JSON.parse(quizAnswerI)];
-
     const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
-
-    console.log("QUIZ ANSWER", Number(quizAnswerI));
+    // console.log("QUIZ ANSWER", JSON.parse(quizAnswerI));
 
     const newQuizResult = [
       ...quizResult,
@@ -72,6 +70,8 @@ const QuizPage = () => {
     setSec(0);
     setMin(0);
   };
+
+  useEffect(() => {}, []);
 
   // useEffect(() => {
   //   if (step === 0) {
@@ -111,6 +111,7 @@ const QuizPage = () => {
           <div>
             {min}:{sec}
           </div>
+
           <div className="w-full bg-background rounded-lg p-7 border border-border">
             {isLoading && (
               <div className="h-fit flex justify-center">
@@ -122,7 +123,7 @@ const QuizPage = () => {
               return (
                 step === i && (
                   <div key={quiz.id} className="flex flex-col gap-5">
-                    <div className="flex justify-between text-xl leading-7 font-medium">
+                    <div className="flex gap-2 text-xl leading-7 font-medium">
                       <div className="w-auto">{quiz.question}</div>
                       <div>
                         {i + 1}
@@ -137,7 +138,7 @@ const QuizPage = () => {
                           onClick={() =>
                             quizStepScoreHandler(
                               quiz.question,
-                              JSON.stringify(index),
+                              index.toString(),
                               quiz.answer,
                               quiz
                             )

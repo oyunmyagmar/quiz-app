@@ -1,22 +1,34 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useArticle } from "@/app/_hooks/use-article";
-import { Button, Label } from "@/components/ui";
+import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
 import { ArticleType } from "@/lib/types";
 import { useParams, useRouter } from "next/navigation";
 import { PiBookOpen } from "react-icons/pi";
+import { SeeMoreContent } from "@/app/_components";
 
 const GeneratedArticlePage = () => {
-  const { selectedArticle } = useArticle();
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
+    null
+  );
   const { articleId } = useParams<{ articleId: string }>();
-  const [article, setArticle] = useState<ArticleType | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    if (selectedArticle?.id === articleId) {
-      setArticle(selectedArticle);
+  const getSelectedArticle = async () => {
+    const response = await fetch(`/api/article/${articleId}`);
+
+    if (response.ok) {
+      const { data } = await response.json();
+
+      if (data) {
+        setSelectedArticle(data);
+      }
     }
-  }, [selectedArticle, articleId]);
+  };
+
+  useEffect(() => {
+    getSelectedArticle();
+  }, []);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -36,9 +48,9 @@ const GeneratedArticlePage = () => {
             </div>
           </div>
           <div className="text-2xl leading-8 font-semibold">
-            {article?.title}
+            {selectedArticle?.title}
           </div>
-          <div className="text-sm leading-5">{article?.summary}</div>
+          <div className="text-sm leading-5">{selectedArticle?.summary}</div>
         </div>
 
         <div className="flex flex-col gap-2">
@@ -47,12 +59,23 @@ const GeneratedArticlePage = () => {
             <Label className="text-muted-foreground">Article Content</Label>
           </div>
           <div className="text-sm leading-5 line-clamp-3">
-            {article?.content}
+            {selectedArticle?.content}
           </div>
           <div className="flex justify-end">
-            <Button variant={"ghost"} className="w-fit h-7 py-1">
-              See more
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button
+                  variant={"ghost"}
+                  size={"lg"}
+                  className="w-fit h-7 py-1 cursor-pointer"
+                >
+                  See more
+                </Button>
+              </DialogTrigger>
+              {selectedArticle && (
+                <SeeMoreContent selectedArticle={selectedArticle} />
+              )}
+            </Dialog>
           </div>
         </div>
 

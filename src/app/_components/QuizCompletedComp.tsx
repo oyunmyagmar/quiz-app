@@ -6,6 +6,7 @@ import { LuCircleCheck, LuBookmark } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 // quiz props-oor yavulah endes correct answer gargah
 
 export const QuizCompletedComp = ({
@@ -23,11 +24,16 @@ export const QuizCompletedComp = ({
 }) => {
   const [loading, setLoading] = useState<boolean>(false);
   let userScore = 0;
-  quizScores.forEach((item) => (userScore = userScore + item.quizScore));
+  quizScores.forEach((item) => (userScore += item.quizScore));
   const router = useRouter();
 
-  const saveQuizScoreHandler = async (quizScores: QuizScoresType[]) => {
+  const saveQuizScoresHandler = async (quizScores: QuizScoresType[]) => {
+    if (!quizScores) {
+      toast.warning("Quiz score is required");
+    }
+
     setLoading(true);
+
     const res = await fetch(`/api/article/${articleId}/quizzes/scores`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,13 +41,14 @@ export const QuizCompletedComp = ({
     });
 
     if (res.ok) {
-      alert("Score added to DB successfully");
+      toast.success("Score added to DB successfully");
       setLoading(false);
       router.push("/");
     } else {
-      alert("Failed to save score to DB!");
+      toast.error("Failed to save score to DB!");
     }
   };
+
   return (
     <div className="flex flex-col mt-44 mx-50 gap-6 text-foreground">
       <div className="flex flex-col gap-2">
@@ -98,7 +105,7 @@ export const QuizCompletedComp = ({
             Restart quiz
           </Button>
           <Button
-            onClick={() => saveQuizScoreHandler(quizScores)}
+            onClick={() => saveQuizScoresHandler(quizScores)}
             disabled={loading}
             size={"lg"}
             className="cursor-pointer"
