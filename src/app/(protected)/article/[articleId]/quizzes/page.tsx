@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { LuLoaderCircle } from "react-icons/lu";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
 import { useQuiz } from "@/app/_hooks/use-quiz";
 import { CancelAndRestartQuiz, QuizCompletedComp } from "@/app/_components";
@@ -15,14 +15,21 @@ const QuizPage = () => {
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
   // const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [min, setMin] = useState<number>(0);
-  const [sec, setSec] = useState<number>(0);
-  let timeSpent = 0;
+  const [sec, setSec] = useState<number>(55);
+  const [timeIsRunning, setTimeIsRunning] = useState<boolean>(false);
+  console.log(sec, "SEC");
+  let minSpent;
+  if (sec < 60) {
+    minSpent = 0;
+  } else {
+    minSpent = sec > 60 && Math.floor(sec / 60);
+  }
+  let secSpent = sec >= 60 ? sec % 60 : sec;
 
-  if (min > 0) {
-    timeSpent = min * 60 + sec;
-  } else timeSpent = sec;
-  console.log({ timeSpent });
+  // if (min > 0) {
+  //   timeSpent = min * 60 + sec;
+  // } else timeSpent = sec;
+  // console.log({ timeSpent });
 
   const quizStepScoreHandler = (
     quizQuestion: string,
@@ -32,7 +39,6 @@ const QuizPage = () => {
   ) => {
     const quizCorrectAnswer = quiz.options[JSON.parse(quizAnswerI)];
     const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
-    // console.log("QUIZ ANSWER", JSON.parse(quizAnswerI));
 
     const newQuizResult = [
       ...quizResult,
@@ -68,27 +74,26 @@ const QuizPage = () => {
     setQuizResult([]);
     setQuizScores([]);
     setSec(0);
-    setMin(0);
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    if (step === 0) {
+      setTimeIsRunning(true);
+    } else if (step >= selectedArticleQuizzes.length) {
+      setTimeIsRunning(false);
+    }
+  }, [step, selectedArticleQuizzes.length]);
 
-  // useEffect(() => {
-  //   if (step === 0) {
-  //     const interval = setInterval(() => {
-  //       setSec((prevSec) => {
-  //         if (prevSec >= 59) {
-  //           setMin((prevMin) => prevMin + 1);
-  //           return 0;
-  //         }
-  //         return prevSec + 1;
-  //       });
-  //     }, 1000);
-  //     return () => {
-  //       clearInterval(interval);
-  //     };
-  //   } else if (step >= selectedArticleQuizzes.length - 1) return;
-  // }, [selectedArticleQuizzes.length]);
+  useEffect(() => {
+    if (!timeIsRunning) {
+      return;
+    }
+    const timer = setInterval(() => {
+      setSec((prevSec) => prevSec + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [timeIsRunning]);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -109,7 +114,7 @@ const QuizPage = () => {
           </div>
 
           <div>
-            {min}:{sec}
+            Timer: {minSpent}:{secSpent}
           </div>
 
           <div className="w-full bg-background rounded-lg p-7 border border-border">
