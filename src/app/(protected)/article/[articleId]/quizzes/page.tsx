@@ -13,23 +13,15 @@ const QuizPage = () => {
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
-  // const router = useRouter();
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [sec, setSec] = useState<number>(55);
+  const [sec, setSec] = useState<number>(0);
   const [timeIsRunning, setTimeIsRunning] = useState<boolean>(false);
-  console.log(sec, "SEC");
-  let minSpent;
-  if (sec < 60) {
-    minSpent = 0;
-  } else {
-    minSpent = sec > 60 && Math.floor(sec / 60);
-  }
-  let secSpent = sec >= 60 ? sec % 60 : sec;
-
-  // if (min > 0) {
-  //   timeSpent = min * 60 + sec;
-  // } else timeSpent = sec;
-  // console.log({ timeSpent });
+  let timeSpentOnQuiz =
+    (Math.floor(sec / 60) < 10 ? "0" : "") +
+    Math.floor(sec / 60) +
+    ":" +
+    (sec % 60 < 10 ? "0" : "") +
+    (sec % 60);
 
   const quizStepScoreHandler = (
     quizQuestion: string,
@@ -95,6 +87,19 @@ const QuizPage = () => {
     return () => clearInterval(timer);
   }, [timeIsRunning]);
 
+  useEffect(() => {
+    if (step > selectedArticleQuizzes.length - 1) {
+      const saveTimeSpent = async () => {
+        await fetch(`/api/article/${articleId}/quizzes/attempts`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sec, articleId }),
+        });
+      };
+      saveTimeSpent();
+    }
+  }, [step, selectedArticleQuizzes.length]);
+
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
       {step < selectedArticleQuizzes.length ? (
@@ -113,9 +118,7 @@ const QuizPage = () => {
             <CancelAndRestartQuiz restartQuizHandler={restartQuizHandler} />
           </div>
 
-          <div>
-            Timer: {minSpent}:{secSpent}
-          </div>
+          <div>Timer: {timeSpentOnQuiz}</div>
 
           <div className="w-full bg-background rounded-lg p-7 border border-border">
             {isLoading && (

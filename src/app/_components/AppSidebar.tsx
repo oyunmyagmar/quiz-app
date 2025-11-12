@@ -1,28 +1,29 @@
 "use client";
+
 import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ArticleType } from "@/lib/types";
+import useSWR from "swr";
 
 export function AppSidebar() {
-  const [allArticles, setAllArticles] = useState<ArticleType[]>([]);
   const [open, setOpen] = useState<boolean>(false);
   const router = useRouter();
+  const { data: allArticles = [] } = useSWR<ArticleType[]>(
+    `/articles`,
+    fetcher
+  );
 
-  const getAllArticles = async () => {
-    const response = await fetch("/api/articles");
+  async function fetcher(path: string) {
+    const response = await fetch("/api" + path);
 
     if (response.ok) {
       const { data } = await response.json();
-      if (data) {
-        setAllArticles(data);
-      }
+      return data;
     }
-  };
 
-  useEffect(() => {
-    getAllArticles();
-  }, []);
+    return null;
+  }
 
   const handleSidebar = () => {
     setOpen(!open);

@@ -5,14 +5,14 @@ import { useRouter } from "next/navigation";
 import { cleanText } from "@/lib/utils/get-clean-text";
 import { LuLoaderCircle } from "react-icons/lu";
 import { toast } from "sonner";
-import { useArticle } from "../_hooks/use-article";
+import useSWR, { useSWRConfig } from "swr";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
   const [articleContent, setArticleContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const { refetchGetAllArticles } = useArticle();
   const router = useRouter();
+  const { mutate } = useSWRConfig();
 
   const generateSummary = async () => {
     if (!articleTitle || !articleContent) {
@@ -47,6 +47,8 @@ const Homepage = () => {
         summary: cleanedSummary,
       }),
     });
+
+    mutate("/articles");
 
     if (res.ok) {
       const { data } = await res.json();
