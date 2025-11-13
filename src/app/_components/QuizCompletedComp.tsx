@@ -15,14 +15,18 @@ export const QuizCompletedComp = ({
   quizScores,
   restartQuizHandler,
   articleId,
+  setLoading,
+  loading,
 }: {
   selectedArticleQuizzes: QuizType[];
   quizResult: QuizResultType[];
   quizScores: QuizScoresType[];
   restartQuizHandler: () => void;
   articleId: string;
+  setLoading: (loading: boolean) => void;
+  loading: boolean;
 }) => {
-  const [loading, setLoading] = useState<boolean>(false);
+  // const [loading, setLoading] = useState<boolean>(false);
   let userScore = 0;
   quizScores.forEach((item) => (userScore += item.quizScore));
   const router = useRouter();

@@ -1,11 +1,22 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useArticle } from "@/app/_hooks/use-article";
 import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
 import { ArticleType } from "@/lib/types";
 import { useParams, useRouter } from "next/navigation";
 import { PiBookOpen } from "react-icons/pi";
 import { SeeMoreContent } from "@/app/_components";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui";
 
 const GeneratedArticlePage = () => {
   const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
@@ -19,7 +30,6 @@ const GeneratedArticlePage = () => {
 
     if (response.ok) {
       const { data } = await response.json();
-
       if (data) {
         setSelectedArticle(data);
       }
@@ -29,6 +39,16 @@ const GeneratedArticlePage = () => {
   useEffect(() => {
     getSelectedArticle();
   }, []);
+
+  const getResults = async () => {
+    const response = await fetch(`/api/article/${articleId}/quizzes/attempts`);
+
+    if (response.ok) {
+      const { data } = await response.json();
+
+      console.log(data);
+    }
+  };
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -79,13 +99,47 @@ const GeneratedArticlePage = () => {
           </div>
         </div>
 
-        <Button
-          onClick={() => router.push(`/article/${articleId}/quizzes`)}
-          size={"lg"}
-          className="w-fit cursor-pointer"
-        >
-          Take a quiz
-        </Button>
+        <div className="flex justify-between">
+          <Button
+            onClick={() => router.push(`/article/${articleId}/quizzes`)}
+            size={"lg"}
+            className="w-fit cursor-pointer"
+          >
+            Take a quiz
+          </Button>
+
+          <Drawer direction="right">
+            <DrawerTrigger asChild>
+              <Button
+                onClick={getResults}
+                size={"lg"}
+                variant={"outline"}
+                className="w-fit cursor-pointer"
+              >
+                View previous results
+              </Button>
+            </DrawerTrigger>
+
+            <DrawerContent className="data-[vaul-drawer-direction=right]:sm:max-w-fit">
+              <DrawerHeader className="p-5">
+                <DrawerTitle>User:</DrawerTitle>
+                <DrawerDescription>History </DrawerDescription>
+              </DrawerHeader>
+
+              <Tabs defaultValue="account" className="w-fit px-5">
+                <TabsList>
+                  <TabsTrigger value="quiz">Quizzes</TabsTrigger>
+                  <TabsTrigger value="attempt">Attempts</TabsTrigger>
+                  <TabsTrigger value="score">Scores</TabsTrigger>
+                </TabsList>
+
+                <TabsContent value="quiz">Quizzes list</TabsContent>
+                <TabsContent value="attempt">Quiz attempts</TabsContent>
+                <TabsContent value="score">Quiz scores </TabsContent>
+              </Tabs>
+            </DrawerContent>
+          </Drawer>
+        </div>
       </div>
     </div>
   );

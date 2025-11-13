@@ -13,7 +13,7 @@ const QuizPage = () => {
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [sec, setSec] = useState<number>(0);
   const [timeIsRunning, setTimeIsRunning] = useState<boolean>(false);
   let timeSpentOnQuiz =
@@ -88,15 +88,18 @@ const QuizPage = () => {
   }, [timeIsRunning]);
 
   useEffect(() => {
-    if (step > selectedArticleQuizzes.length - 1) {
-      const saveTimeSpent = async () => {
-        await fetch(`/api/article/${articleId}/quizzes/attempts`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sec, articleId }),
-        });
-      };
-      saveTimeSpent();
+    if (selectedArticleQuizzes.length) {
+      if (step > selectedArticleQuizzes.length - 1) {
+        console.log("STEP", step, selectedArticleQuizzes.length - 1);
+        const saveTimeSpent = async () => {
+          await fetch(`/api/article/${articleId}/quizzes/attempts`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ sec, articleId }),
+          });
+        };
+        saveTimeSpent();
+      }
     }
   }, [step, selectedArticleQuizzes.length]);
 
@@ -118,10 +121,12 @@ const QuizPage = () => {
             <CancelAndRestartQuiz restartQuizHandler={restartQuizHandler} />
           </div>
 
-          <div>Timer: {timeSpentOnQuiz}</div>
+          <div className="text-base leading-6 font-medium text-muted-foreground">
+            Timer: {timeSpentOnQuiz}
+          </div>
 
           <div className="w-full bg-background rounded-lg p-7 border border-border">
-            {isLoading && (
+            {loading && (
               <div className="h-fit flex justify-center">
                 <LuLoaderCircle size={24} className="animate-spin" />
               </div>
@@ -143,14 +148,14 @@ const QuizPage = () => {
                     <div className="grid grid-cols-2 gap-4">
                       {quiz.options.map((opt, index) => (
                         <Button
-                          onClick={() =>
+                          onClick={() => {
                             quizStepScoreHandler(
                               quiz.question,
                               index.toString(),
                               quiz.answer,
                               quiz
-                            )
-                          }
+                            );
+                          }}
                           key={opt}
                           variant={"outline"}
                           className="w-auto min-h-10 h-auto whitespace-pre-wrap cursor-pointer"
@@ -172,6 +177,8 @@ const QuizPage = () => {
           quizScores={quizScores}
           restartQuizHandler={restartQuizHandler}
           articleId={articleId}
+          setLoading={setLoading}
+          loading={loading}
         />
       )}
     </div>
