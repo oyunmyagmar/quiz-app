@@ -18,12 +18,23 @@ import {
   TabsTrigger,
 } from "@/components/ui";
 
+type quizResultsType = {
+  id: string;
+  articleid: string;
+  userid: string;
+  timespent: number;
+  createdat: string;
+  updatedat: string;
+};
+
 const GeneratedArticlePage = () => {
   const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
     null
   );
+  const [quizResults, setQuizResults] = useState<quizResultsType[]>([]);
   const { articleId } = useParams<{ articleId: string }>();
   const router = useRouter();
+  console.log({ quizResults });
 
   const getSelectedArticle = async () => {
     const response = await fetch(`/api/article/${articleId}`);
@@ -40,13 +51,14 @@ const GeneratedArticlePage = () => {
     getSelectedArticle();
   }, []);
 
-  const getResults = async () => {
+  const getQuizResults = async () => {
     const response = await fetch(`/api/article/${articleId}/quizzes/attempts`);
 
     if (response.ok) {
       const { data } = await response.json();
-
-      console.log(data);
+      if (data) {
+        setQuizResults(data);
+      }
     }
   };
 
@@ -111,7 +123,7 @@ const GeneratedArticlePage = () => {
           <Drawer direction="right">
             <DrawerTrigger asChild>
               <Button
-                onClick={getResults}
+                onClick={getQuizResults}
                 size={"lg"}
                 variant={"outline"}
                 className="w-fit cursor-pointer"
@@ -123,19 +135,23 @@ const GeneratedArticlePage = () => {
             <DrawerContent className="data-[vaul-drawer-direction=right]:sm:max-w-fit">
               <DrawerHeader className="p-5">
                 <DrawerTitle>User:</DrawerTitle>
-                <DrawerDescription>History </DrawerDescription>
+                <DrawerDescription>History {}</DrawerDescription>
               </DrawerHeader>
 
               <Tabs defaultValue="account" className="w-fit px-5">
-                <TabsList>
-                  <TabsTrigger value="quiz">Quizzes</TabsTrigger>
-                  <TabsTrigger value="attempt">Attempts</TabsTrigger>
-                  <TabsTrigger value="score">Scores</TabsTrigger>
-                </TabsList>
-
-                <TabsContent value="quiz">Quizzes list</TabsContent>
-                <TabsContent value="attempt">Quiz attempts</TabsContent>
-                <TabsContent value="score">Quiz scores </TabsContent>
+                {quizResults &&
+                  quizResults.map((el, i) => (
+                    <div key={el.id}>
+                      <TabsList>
+                        <TabsTrigger value={`attempt${i}`}>
+                          Attempt {i + 1}: {el.id}
+                        </TabsTrigger>
+                      </TabsList>
+                      <TabsContent value={`attempt${i}`}>
+                        Time spent: {el.timespent}
+                      </TabsContent>
+                    </div>
+                  ))}
               </Tabs>
             </DrawerContent>
           </Drawer>

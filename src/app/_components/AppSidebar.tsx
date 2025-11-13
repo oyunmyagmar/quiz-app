@@ -21,7 +21,6 @@ export function AppSidebar() {
       const { data } = await response.json();
       return data;
     }
-
     return null;
   }
 

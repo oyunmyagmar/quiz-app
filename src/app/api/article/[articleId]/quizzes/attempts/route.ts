@@ -15,6 +15,7 @@ export async function GET(
     where: {
       articleid: articleId,
     },
+    orderBy: { id: "asc" },
   });
   console.log({ attemptCollection });
   return NextResponse.json({ data: attemptCollection });

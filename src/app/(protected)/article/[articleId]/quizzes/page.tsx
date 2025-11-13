@@ -4,15 +4,17 @@ import { Button } from "@/components/ui";
 import { LuLoaderCircle } from "react-icons/lu";
 import { useParams } from "next/navigation";
 import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
-import { useQuiz } from "@/app/_hooks/use-quiz";
 import { CancelAndRestartQuiz, QuizCompletedComp } from "@/app/_components";
 
 const QuizPage = () => {
   const { articleId } = useParams<{ articleId: string }>();
-  const { selectedArticleQuizzes } = useQuiz();
+  const [selectedArticleQuizzes, setSelectedArticleQuizzes] = useState<
+    QuizType[]
+  >([]);
+  // const { selectedArticleQuizzes } = useQuiz();
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
-  const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]);
+  const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]); // hereggui bj mgad
   const [loading, setLoading] = useState<boolean>(false);
   const [sec, setSec] = useState<number>(0);
   const [timeIsRunning, setTimeIsRunning] = useState<boolean>(false);
@@ -23,39 +25,53 @@ const QuizPage = () => {
     (sec % 60 < 10 ? "0" : "") +
     (sec % 60);
 
-  const quizStepScoreHandler = (
-    quizQuestion: string,
-    selectedAnswerI: string,
-    quizAnswerI: string,
-    quiz: QuizType
-  ) => {
-    const quizCorrectAnswer = quiz.options[JSON.parse(quizAnswerI)];
+  const getSelectedArticleQuizzes = async () => {
+    if (!articleId) {
+      return;
+    }
+    const response = await fetch(`/api/article/${articleId}/quizzes`);
+    if (response.ok) {
+      const { data } = await response.json();
+      if (data) {
+        setSelectedArticleQuizzes(data);
+      }
+    }
+  };
+
+  useEffect(() => {
+    getSelectedArticleQuizzes();
+  }, [articleId]);
+
+  console.log({ selectedArticleQuizzes });
+
+  const quizStepScoreHandler = (selectedAnswerI: string, quiz: QuizType) => {
+    const quizCorrectAnswer = quiz.options[JSON.parse(quiz.answer)];
     const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
+
+    if (quizCorrectAnswer === clientAnswer) {
+      const newQuizScores = [
+        ...quizScores,
+        { quizQuestionId: quiz.id, quizScore: 1 },
+      ];
+      setQuizScores(newQuizScores);
+    } else if (quizCorrectAnswer !== clientAnswer) {
+      const newQuizScores = [
+        ...quizScores,
+        { quizQuestionId: quiz.id, quizScore: 0 },
+      ];
+      setQuizScores(newQuizScores);
+    }
 
     const newQuizResult = [
       ...quizResult,
       {
-        question: quizQuestion,
+        question: quiz.question,
         userAnswerString: clientAnswer,
         correctAnswerString: quizCorrectAnswer,
       },
     ];
     if (newQuizResult) {
       setQuizResult(newQuizResult);
-    }
-
-    if (selectedAnswerI === quizAnswerI) {
-      const newQuizScores = [
-        ...quizScores,
-        { quizQuestionId: quiz.id, quizScore: 1 },
-      ];
-      setQuizScores(newQuizScores);
-    } else if (selectedAnswerI !== quizAnswerI) {
-      const newQuizScores = [
-        ...quizScores,
-        { quizQuestionId: quiz.id, quizScore: 0 },
-      ];
-      setQuizScores(newQuizScores);
     }
 
     setStep((prev) => prev + 1);
@@ -74,7 +90,7 @@ const QuizPage = () => {
     } else if (step >= selectedArticleQuizzes.length) {
       setTimeIsRunning(false);
     }
-  }, [step, selectedArticleQuizzes.length]);
+  }, [step]);
 
   useEffect(() => {
     if (!timeIsRunning) {
@@ -101,7 +117,7 @@ const QuizPage = () => {
         saveTimeSpent();
       }
     }
-  }, [step, selectedArticleQuizzes.length]);
+  }, [step]);
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -146,21 +162,16 @@ const QuizPage = () => {
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
-                      {quiz.options.map((opt, index) => (
+                      {quiz.options.map((option, index) => (
                         <Button
                           onClick={() => {
-                            quizStepScoreHandler(
-                              quiz.question,
-                              index.toString(),
-                              quiz.answer,
-                              quiz
-                            );
+                            quizStepScoreHandler(index.toString(), quiz);
                           }}
-                          key={opt}
+                          key={option}
                           variant={"outline"}
                           className="w-auto min-h-10 h-auto whitespace-pre-wrap cursor-pointer"
                         >
-                          {opt}
+                          {option}
                         </Button>
                       ))}
                     </div>
