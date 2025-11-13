@@ -8,18 +8,21 @@ export const useQuiz = () => {
   >([]);
   const { articleId } = useParams<{ articleId: string }>();
 
-  useEffect(() => {
-    if (!articleId) return;
+  const getSelectedArticleQuizzes = async () => {
+    if (!articleId) {
+      return;
+    }
 
-    const getSelectedArticleQuizzes = async () => {
-      const response = await fetch(`/api/article/${articleId}/quizzes`);
+    const response = await fetch(`/api/article/${articleId}/quizzes`);
+    if (response.ok) {
       const { data } = await response.json();
-
       if (data) {
         setSelectedArticleQuizzes(data);
       }
-    };
+    }
+  };
 
+  useEffect(() => {
     getSelectedArticleQuizzes();
   }, []);
 

@@ -5,13 +5,11 @@ import { LuLoaderCircle } from "react-icons/lu";
 import { useParams } from "next/navigation";
 import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
 import { CancelAndRestartQuiz, QuizCompletedComp } from "@/app/_components";
+import { useQuiz } from "@/app/_hooks/use-quiz";
 
 const QuizPage = () => {
   const { articleId } = useParams<{ articleId: string }>();
-  const [selectedArticleQuizzes, setSelectedArticleQuizzes] = useState<
-    QuizType[]
-  >([]);
-  // const { selectedArticleQuizzes } = useQuiz();
+  const { selectedArticleQuizzes } = useQuiz();
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
   const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]); // hereggui bj mgad
@@ -24,23 +22,6 @@ const QuizPage = () => {
     ":" +
     (sec % 60 < 10 ? "0" : "") +
     (sec % 60);
-
-  const getSelectedArticleQuizzes = async () => {
-    if (!articleId) {
-      return;
-    }
-    const response = await fetch(`/api/article/${articleId}/quizzes`);
-    if (response.ok) {
-      const { data } = await response.json();
-      if (data) {
-        setSelectedArticleQuizzes(data);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getSelectedArticleQuizzes();
-  }, [articleId]);
 
   console.log({ selectedArticleQuizzes });
 
