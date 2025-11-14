@@ -5,7 +5,6 @@ const ai = new GoogleGenAI({});
 
 export async function POST(request: NextRequest) {
   const { articleTitle, articleContent } = await request.json();
-  // console.log({ articleTitle }, { articleContent });
 
   if (!articleTitle || !articleContent) {
     return NextResponse.json(
@@ -29,6 +28,5 @@ export async function POST(request: NextRequest) {
   });
 
   const generatedSummary = response.text;
-  // console.log({ generatedSummary });
   return NextResponse.json({ text: generatedSummary });
 }

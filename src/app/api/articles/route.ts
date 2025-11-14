@@ -11,10 +11,21 @@ export const GET = async () => {
 
 export const POST = async (request: NextRequest) => {
   const body = await request.json();
-  const { title, content, summary } = body;
+  const { title, content, summary, userClerkId } = body;
+
+  const user = await prisma.users.findUnique({
+    where: { clerkid: userClerkId },
+  });
+
+  console.log({ user });
 
   const article = await prisma.articles.create({
-    data: { title: title, content: content, summary: summary },
+    data: {
+      title: title,
+      content: content,
+      summary: summary,
+      userid: user?.id,
+    },
   });
 
   return NextResponse.json({

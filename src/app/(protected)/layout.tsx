@@ -13,8 +13,8 @@ import { Toaster } from "@/components/ui";
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser();
   const [quizAppUser, setQuizAppUser] = useState<UserType | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const router = useRouter();
-  console.log({ quizAppUser });
 
   useEffect(() => {
     if (isLoaded && !user) {
@@ -27,35 +27,55 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }, [isLoaded, user]);
 
   const registerUser = async (user: UserResource) => {
-    const response = await fetch("/api/users", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        clerkId: user.id,
-        email: user.emailAddresses[0].emailAddress,
-        name: user.firstName,
-      }),
-    });
+    if (!user) {
+      toast.warning("Missing required fields!");
+      return;
+    }
 
-    if (response.ok) {
-      toast("User registered successfully");
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/users", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clerkId: user.id,
+          email: user.emailAddresses[0].emailAddress,
+          name: user.firstName,
+        }),
+      });
+
+      if (!response.ok) {
+        toast("Failed to register user!");
+      }
+
+      if (response.status === 400) {
+        //asdasd
+      }
+
       const { data } = await response.json();
+      toast.success("User registered successfully");
       if (data) {
         setQuizAppUser(data);
       }
-    } else {
-      alert("User register error");
+    } catch (error) {
+      console.error("Error while registering user!", error);
+      toast.error("Something went wrong while registering user!");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   if (!isLoaded) {
     return (
       <div className="w-screen h-screen flex">
-        <div className="flex w-full h-full items-center justify-center">
-          <AiOutlineLoading className="animate-spin" />
-          <div>Loading</div>
+        <div className="w-full h-full flex items-center justify-center gap-1.5">
+          <AiOutlineLoading className="animate-spin" size={24} />
+          <div className="text-2xl leading-8 font-semibold text-foreground">
+            Loading
+          </div>
         </div>
       </div>
     );

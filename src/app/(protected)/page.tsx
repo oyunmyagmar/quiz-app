@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { cleanText } from "@/lib/utils/get-clean-text";
 import { LuLoaderCircle } from "react-icons/lu";
 import { toast } from "sonner";
-import useSWR, { useSWRConfig } from "swr";
+import { useSWRConfig } from "swr";
+import { useUser } from "@clerk/nextjs";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
@@ -13,6 +14,8 @@ const Homepage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { mutate } = useSWRConfig();
+  const { user } = useUser();
+  const clerkId = user?.id;
 
   const generateSummary = async () => {
     if (!articleTitle || !articleContent) {
@@ -45,23 +48,23 @@ const Homepage = () => {
         title: cleanedAricleTitle,
         content: cleanedArticleContent,
         summary: cleanedSummary,
+        userClerkId: clerkId,
       }),
     });
 
     mutate("/articles");
 
-    if (res.ok) {
-      const { data } = await res.json();
-      toast.success("Article added to DB successfully");
-      setLoading(false);
-      setArticleTitle("");
-      setArticleContent("");
-      // enenii araas refetchGetAllArticles avch bolno esvel useContext ashiglah
-      if (data?.id) {
-        router.push(`/article/${data.id}`);
-      }
-    } else {
+    if (!res.ok) {
       toast.error("Failed to add article to DB!");
+    }
+
+    const { data } = await res.json();
+    toast.success("Article added to DB successfully");
+    setArticleTitle("");
+    setArticleContent("");
+    setLoading(false);
+    if (data?.id) {
+      router.push(`/article/${data.id}`);
     }
   };
 
