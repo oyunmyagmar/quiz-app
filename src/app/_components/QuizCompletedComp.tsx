@@ -26,7 +26,6 @@ export const QuizCompletedComp = ({
   setLoading: (loading: boolean) => void;
   loading: boolean;
 }) => {
-  // const [loading, setLoading] = useState<boolean>(false);
   let userScore = 0;
   quizScores.forEach((item) => (userScore += item.quizScore));
   const router = useRouter();
@@ -77,7 +76,7 @@ export const QuizCompletedComp = ({
           {quizResult.map((res, i) => (
             <div key={i} className="flex gap-3">
               <div>
-                {res.userAnswerString !== res.correctAnswerString ? (
+                {res.clientAnswer !== res.quizCorrectAnswer ? (
                   <IoCloseCircleOutline size={22} className="text-red-700" />
                 ) : (
                   <LuCircleCheck size={22} className="text-green-500" />
@@ -88,10 +87,10 @@ export const QuizCompletedComp = ({
                   <span>{i + 1}. </span>
                   {res.question}
                 </div>
-                <div>Your answer: {res.userAnswerString}</div>
+                <div>Your answer: {res.clientAnswer}</div>
                 <div className="text-green-500">
-                  {res.userAnswerString !== res.correctAnswerString &&
-                    `Correct: ${res.correctAnswerString}`}
+                  {res.clientAnswer !== res.quizCorrectAnswer &&
+                    `Correct: ${res.quizCorrectAnswer}`}
                 </div>
               </div>
             </div>

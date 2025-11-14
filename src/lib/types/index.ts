@@ -1,3 +1,11 @@
+export type UserType = {
+  id: string;
+  clerkid: string;
+  email: string;
+  name: string;
+  createdat: string;
+  updatedat: string;
+};
 export type ArticleType = {
   id: string;
   title: string;
@@ -20,11 +28,12 @@ export type QuizType = {
 
 export type ScoreType = {
   id: string;
-  quizid: string;
+  quizId: string;
   userid?: string;
   score: number;
   createdat: string;
   updatedat: string;
+  result: QuizResultType;
 };
 
 export type AttemptType = {
@@ -38,12 +47,12 @@ export type AttemptType = {
 };
 
 export type QuizResultType = {
+  quizQuestionId: string;
   question: string;
-  userAnswerString?: string;
-  correctAnswerString?: string;
+  clientAnswer?: string;
+  quizCorrectAnswer?: string;
 };
 
 export type QuizScoresType = {
-  quizQuestionId: string;
   quizScore: number;
 };

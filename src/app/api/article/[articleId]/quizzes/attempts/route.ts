@@ -22,8 +22,8 @@ export async function GET(
 }
 
 export async function POST(request: NextRequest) {
-  const { sec, articleId } = await request.json();
-  console.log({ sec, articleId });
+  const { sec, articleId, quizScores, quizResult } = await request.json();
+  console.log({ sec, articleId, quizScores, quizResult });
 
   if (!sec) {
     return NextResponse.json(

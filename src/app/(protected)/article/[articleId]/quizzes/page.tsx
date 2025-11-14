@@ -24,31 +24,28 @@ const QuizPage = () => {
     (sec % 60);
 
   console.log({ selectedArticleQuizzes });
+  console.log({ quizScores });
+  console.log({ quizResult });
 
   const quizStepScoreHandler = (selectedAnswerI: string, quiz: QuizType) => {
     const quizCorrectAnswer = quiz.options[JSON.parse(quiz.answer)];
     const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
 
     if (quizCorrectAnswer === clientAnswer) {
-      const newQuizScores = [
-        ...quizScores,
-        { quizQuestionId: quiz.id, quizScore: 1 },
-      ];
+      const newQuizScores = [...quizScores, { quizScore: 1 }];
       setQuizScores(newQuizScores);
     } else if (quizCorrectAnswer !== clientAnswer) {
-      const newQuizScores = [
-        ...quizScores,
-        { quizQuestionId: quiz.id, quizScore: 0 },
-      ];
+      const newQuizScores = [...quizScores, { quizScore: 0 }];
       setQuizScores(newQuizScores);
     }
 
     const newQuizResult = [
       ...quizResult,
       {
+        quizQuestionId: quiz.id,
         question: quiz.question,
-        userAnswerString: clientAnswer,
-        correctAnswerString: quizCorrectAnswer,
+        clientAnswer,
+        quizCorrectAnswer,
       },
     ];
     if (newQuizResult) {
@@ -87,15 +84,14 @@ const QuizPage = () => {
   useEffect(() => {
     if (selectedArticleQuizzes.length) {
       if (step > selectedArticleQuizzes.length - 1) {
-        console.log("STEP", step, selectedArticleQuizzes.length - 1);
-        const saveTimeSpent = async () => {
+        const saveAttemptAndScore = async () => {
           await fetch(`/api/article/${articleId}/quizzes/attempts`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sec, articleId }),
+            body: JSON.stringify({ sec, articleId, quizScores, quizResult }),
           });
         };
-        saveTimeSpent();
+        saveAttemptAndScore();
       }
     }
   }, [step]);
