@@ -1,25 +1,35 @@
-// "use client";
-// import React, { useEffect, useState } from "react";
-// import { ArticleType } from "@/lib/types";
+"use client";
+import { useEffect, useState } from "react";
+import { ArticleType } from "@/lib/types";
+import { useParams } from "next/navigation";
+import { toast } from "sonner";
 
-// export const useArticle = () => {
-//   const [allArticles, setAllArticles] = useState<ArticleType[]>([]);
+export const useArticle = () => {
+  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
+    null
+  );
+  const { articleId } = useParams<{ articleId: string }>();
 
-//   const getAllArticles = async () => {
-//     const resultData = await fetch("/api/articles");
-//     const { data } = await resultData.json();
+  const getSelectedArticle = async () => {
+    if (!articleId) {
+      return;
+    }
 
-//     if (data) {
-//       setAllArticles(data);
-//     }
-//   };
+    const response = await fetch(`/api/article/${articleId}`);
 
-//   useEffect(() => {
-//     getAllArticles();
-//   }, []);
+    if (!response.ok) {
+      toast.error("Failed to get article!");
+    }
 
-//   return {
-//     allArticles,
-//     refetchGetAllArticles: getAllArticles,
-//   };
-// };
+    const { data } = await response.json();
+    if (data) {
+      setSelectedArticle(data);
+    }
+  };
+
+  useEffect(() => {
+    getSelectedArticle();
+  }, []);
+
+  return { selectedArticle };
+};

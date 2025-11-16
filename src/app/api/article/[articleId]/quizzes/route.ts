@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { QuizType } from "@/lib/types";
 import { parseJsonBlockSafe } from "@/lib/utils/get-clean-text";
 import { GoogleGenAI } from "@google/genai";
-import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({});
@@ -69,7 +68,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: "Quiz added to DB successfully",
-      data: quizObj,
+      // data: quizObj,
     });
   } catch (error) {
     console.error("Error while adding quiz to DB!", error);

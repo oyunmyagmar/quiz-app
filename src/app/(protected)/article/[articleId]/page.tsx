@@ -1,37 +1,22 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
 import { useRouter, useParams } from "next/navigation";
 import { PiBookOpen } from "react-icons/pi";
-import { LuLoaderCircle, LuChevronLeft } from "react-icons/lu";
-import { ArticleType } from "@/lib/types";
+import { LuLoaderCircle } from "react-icons/lu";
 import { toast } from "sonner";
-import { SeeMoreContent } from "@/app/_components";
+import {
+  BackBtn,
+  QuizGeneratorHeading,
+  SeeMoreContent,
+} from "@/app/_components";
+import { useArticle } from "@/app/_hooks/use-article";
 
 const ArticlePage = () => {
   const { articleId } = useParams<{ articleId: string }>();
-  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
-    null
-  );
+  const { selectedArticle } = useArticle();
   const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
-
-  const getSelectedArticle = async () => {
-    const response = await fetch(`/api/article/${articleId}`);
-
-    if (!response.ok) {
-      toast.error("Failed to get article!");
-    }
-
-    const { data } = await response.json();
-    if (data) {
-      setSelectedArticle(data);
-    }
-  };
-
-  useEffect(() => {
-    getSelectedArticle();
-  }, []);
 
   const generateQuiz = async (articleId: string) => {
     if (!selectedArticle?.summary || !articleId) {
@@ -62,20 +47,10 @@ const ArticlePage = () => {
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
       <div className="mt-26 flex flex-col mx-64 gap-6">
-        <Button
-          onClick={() => router.push("/")}
-          variant={"outline"}
-          size={"lg"}
-          className="w-fit"
-        >
-          <LuChevronLeft size={16} />
-        </Button>
+        <BackBtn />
 
         <div className="bg-background flex flex-col p-7 rounded-lg h-fit gap-5 text-foreground font-semibold border border-border">
-          <div className="flex gap-2 items-center">
-            <img src="/article-icon.svg" alt="" className="w-6 h-6" />
-            <div className="text-2xl leading-8">Article Quiz Generator</div>
-          </div>
+          <QuizGeneratorHeading />
 
           <div className="flex flex-col gap-2 text-sm leading-5">
             <div className="flex gap-2 items-center">

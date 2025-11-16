@@ -1,6 +1,7 @@
 import { QuizType } from "@/lib/types";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 export const useQuiz = () => {
   const [selectedArticleQuizzes, setSelectedArticleQuizzes] = useState<
@@ -14,11 +15,14 @@ export const useQuiz = () => {
     }
 
     const response = await fetch(`/api/article/${articleId}/quizzes`);
-    if (response.ok) {
-      const { data } = await response.json();
-      if (data) {
-        setSelectedArticleQuizzes(data);
-      }
+
+    if (!response.ok) {
+      toast.error("Failed to get quizzes!");
+    }
+
+    const { data } = await response.json();
+    if (data) {
+      setSelectedArticleQuizzes(data);
     }
   };
 

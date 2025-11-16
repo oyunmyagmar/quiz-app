@@ -7,6 +7,7 @@ import { LuLoaderCircle } from "react-icons/lu";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { useUser } from "@clerk/nextjs";
+import { QuizGeneratorHeading } from "../_components";
 
 const Homepage = () => {
   const [articleTitle, setArticleTitle] = useState<string>("");
@@ -72,12 +73,7 @@ const Homepage = () => {
     <div className="w-full h-full bg-secondary flex justify-center">
       <div className="bg-background flex flex-col p-7 mt-26 mx-64 rounded-lg h-fit gap-5 text-muted-foreground border border-border">
         <div className="flex flex-col gap-2">
-          <div className="flex gap-2 items-center">
-            <img src="/article-icon.svg" alt="" className="w-6 h-6" />
-            <div className="text-2xl leading-8 font-semibold text-foreground">
-              Article Quiz Generator
-            </div>
-          </div>
+          <QuizGeneratorHeading />
           <div className="text-base leading-[19px]">
             Paste your article below to generate a summarize and quiz question.
             Your articles will saved in the sidebar for future reference.

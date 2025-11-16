@@ -1,10 +1,8 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
-import { ArticleType } from "@/lib/types";
+import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PiBookOpen } from "react-icons/pi";
-import { SeeMoreContent } from "@/app/_components";
+import { QuizGeneratorHeading, SeeMoreContent } from "@/app/_components";
 import {
   Drawer,
   DrawerContent,
@@ -16,7 +14,12 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
+  Button,
+  Dialog,
+  DialogTrigger,
+  Label,
 } from "@/components/ui";
+import { useArticle } from "@/app/_hooks/use-article";
 
 type quizResultsType = {
   id: string;
@@ -28,28 +31,12 @@ type quizResultsType = {
 };
 
 const GeneratedArticlePage = () => {
-  const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
-    null
-  );
-  const [quizResults, setQuizResults] = useState<quizResultsType[]>([]);
+  const { selectedArticle } = useArticle();
   const { articleId } = useParams<{ articleId: string }>();
+
+  const [quizResults, setQuizResults] = useState<quizResultsType[]>([]);
   const router = useRouter();
   console.log({ quizResults });
-
-  const getSelectedArticle = async () => {
-    const response = await fetch(`/api/article/${articleId}`);
-
-    if (response.ok) {
-      const { data } = await response.json();
-      if (data) {
-        setSelectedArticle(data);
-      }
-    }
-  };
-
-  useEffect(() => {
-    getSelectedArticle();
-  }, []);
 
   const getQuizResults = async () => {
     const response = await fetch(`/api/article/${articleId}/quizzes/attempts`);
@@ -65,12 +52,7 @@ const GeneratedArticlePage = () => {
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
       <div className="bg-background flex flex-col p-7 mt-26 mx-64 rounded-lg h-fit gap-5 text-primary border border-border">
-        <div className="flex gap-2 items-center">
-          <img src="/article-icon.svg" alt="" className="w-6 h-6" />
-          <div className="text-2xl leading-8 font-semibold">
-            Generated Article
-          </div>
-        </div>
+        <QuizGeneratorHeading />
 
         <div className="flex flex-col gap-2">
           <div className="flex gap-2 items-center">

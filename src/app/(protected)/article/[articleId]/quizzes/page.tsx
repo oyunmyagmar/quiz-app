@@ -23,10 +23,6 @@ const QuizPage = () => {
     (sec % 60 < 10 ? "0" : "") +
     (sec % 60);
 
-  console.log({ selectedArticleQuizzes });
-  console.log({ quizScores });
-  console.log({ quizResult });
-
   const quizStepScoreHandler = (selectedAnswerI: string, quiz: QuizType) => {
     const quizCorrectAnswer = quiz.options[JSON.parse(quiz.answer)];
     const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
@@ -134,7 +130,7 @@ const QuizPage = () => {
                       <div>
                         {i + 1}
                         <span className="text-base leading-6 text-muted-foreground">
-                          /5
+                          /{selectedArticleQuizzes.length}
                         </span>
                       </div>
                     </div>
