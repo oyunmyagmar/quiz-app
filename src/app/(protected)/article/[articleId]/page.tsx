@@ -9,21 +9,23 @@ import { toast } from "sonner";
 import { SeeMoreContent } from "@/app/_components";
 
 const ArticlePage = () => {
-  const [loading, setLoading] = useState<boolean>(false);
   const { articleId } = useParams<{ articleId: string }>();
   const [selectedArticle, setSelectedArticle] = useState<ArticleType | null>(
     null
   );
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const getSelectedArticle = async () => {
     const response = await fetch(`/api/article/${articleId}`);
 
-    if (response.ok) {
-      const { data } = await response.json();
-      if (data) {
-        setSelectedArticle(data);
-      }
+    if (!response.ok) {
+      toast.error("Failed to get article!");
+    }
+
+    const { data } = await response.json();
+    if (data) {
+      setSelectedArticle(data);
     }
   };
 
@@ -48,13 +50,13 @@ const ArticlePage = () => {
       }),
     });
 
-    if (response.ok) {
-      toast.success("Quiz added to DB successfully");
-      setLoading(false);
-      router.push(`/article/${articleId}/quizzes`);
-    } else {
+    if (!response.ok) {
       toast.error("Error while generating or adding quiz to DB!");
     }
+
+    toast.success("Quiz added to DB successfully");
+    setLoading(false);
+    router.push(`/article/${articleId}/quizzes`);
   };
 
   return (

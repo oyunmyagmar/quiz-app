@@ -13,11 +13,16 @@ export const POST = async (request: NextRequest) => {
   const body = await request.json();
   const { title, content, summary, userClerkId } = body;
 
+  if (!title || !content || !summary || !userClerkId) {
+    return NextResponse.json(
+      { error: "Missing required fields!" },
+      { status: 400 }
+    );
+  }
+
   const user = await prisma.users.findUnique({
     where: { clerkid: userClerkId },
   });
-
-  console.log({ user });
 
   const article = await prisma.articles.create({
     data: {

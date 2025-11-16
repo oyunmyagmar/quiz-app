@@ -28,5 +28,8 @@ export async function POST(request: NextRequest) {
   });
 
   const generatedSummary = response.text;
-  return NextResponse.json({ text: generatedSummary });
+  return NextResponse.json({
+    message: "Summary generated successfully",
+    text: generatedSummary,
+  });
 }

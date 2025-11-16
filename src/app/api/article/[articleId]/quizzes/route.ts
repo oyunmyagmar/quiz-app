@@ -1,8 +1,8 @@
-import { query } from "@/lib/connectDb";
 import { prisma } from "@/lib/prisma";
 import { QuizType } from "@/lib/types";
 import { parseJsonBlockSafe } from "@/lib/utils/get-clean-text";
 import { GoogleGenAI } from "@google/genai";
+import { error } from "console";
 import { NextRequest, NextResponse } from "next/server";
 
 const ai = new GoogleGenAI({});
@@ -19,7 +19,6 @@ export const GET = async (
     },
   });
 
-  // console.log({ quizCollection });
   return NextResponse.json({ data: quizCollection }, { status: 200 });
 };
 
@@ -51,7 +50,7 @@ export async function POST(request: NextRequest) {
   const quizObj = parseJsonBlockSafe(generatedQuiz!);
   if (!quizObj) {
     return NextResponse.json(
-      { error: "Failed to generate quiz." },
+      { error: "Failed to generate quiz!" },
       { status: 500 }
     );
   }
@@ -66,15 +65,18 @@ export async function POST(request: NextRequest) {
           articleid: articleId,
         },
       });
-      // console.log("QUIZ", { quiz }, "QUIZ");
     });
-    console.log("Quiz added to DB successfully");
+
+    return NextResponse.json({
+      message: "Quiz added to DB successfully",
+      data: quizObj,
+    });
   } catch (error) {
-    console.error("Error while adding quiz to DB", error);
+    console.error("Error while adding quiz to DB!", error);
   }
 
-  return NextResponse.json({
-    message: "Quiz added to DB successfully",
-    data: quizObj,
-  });
+  return NextResponse.json(
+    { error: "Failed to add quiz to DB!" },
+    { status: 500 }
+  );
 }
