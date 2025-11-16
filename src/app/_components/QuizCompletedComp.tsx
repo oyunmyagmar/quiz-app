@@ -1,55 +1,67 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { RxReload } from "react-icons/rx";
 import { Button } from "@/components/ui";
 import { LuCircleCheck, LuBookmark } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
+import { QuizResultType, QuizType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-// quiz props-oor yavulah endes correct answer gargah
+import { useUser } from "@clerk/nextjs";
 
 export const QuizCompletedComp = ({
+  articleId,
   selectedArticleQuizzes,
   quizResult,
-  quizScores,
   restartQuizHandler,
-  articleId,
   setLoading,
   loading,
+  sec,
+  timeSpentOnQuiz,
 }: {
+  articleId: string;
   selectedArticleQuizzes: QuizType[];
   quizResult: QuizResultType[];
-  quizScores: QuizScoresType[];
   restartQuizHandler: () => void;
-  articleId: string;
   setLoading: (loading: boolean) => void;
   loading: boolean;
+  sec: number;
+  timeSpentOnQuiz: string;
 }) => {
-  let userScore = 0;
-  quizScores.forEach((item) => (userScore += item.quizScore));
   const router = useRouter();
+  const { user } = useUser();
+  const clerkId = user?.id;
+  let userScore = 0;
+  quizResult.forEach((item) => (userScore += item.quizScore));
 
-  const saveQuizScoresHandler = async (quizScores: QuizScoresType[]) => {
-    if (!quizScores) {
-      toast.warning("Quiz score is required");
+  const saveQuizAttemptScores = async (quizResult: QuizResultType[]) => {
+    if (!quizResult || !sec) {
+      toast.warning("Quiz result is required");
     }
 
     setLoading(true);
 
-    const res = await fetch(`/api/article/${articleId}/quizzes/scores`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quizScores }),
-    });
+    const res = await fetch(
+      `/api/article/${articleId}/quizzes/attempt-scores`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          userClerkId: clerkId,
+          quizResult,
+          sec,
+          articleId,
+        }),
+      }
+    );
 
-    if (res.ok) {
-      toast.success("Score added to DB successfully");
-      setLoading(false);
-      router.push("/");
-    } else {
-      toast.error("Failed to save score to DB!");
+    if (!res.ok) {
+      toast.error("Failed to save result to DB!");
     }
+
+    toast.success("Result added to DB successfully");
+    setLoading(false);
+    router.push("/");
   };
 
   return (
@@ -65,11 +77,20 @@ export const QuizCompletedComp = ({
       </div>
 
       <div className="w-full bg-background rounded-lg p-7 border border-border flex flex-col gap-7">
-        <div className="text-2xl leading-8 font-semibold">
-          Your score: {userScore}
-          <span className="text-base leading-6 font-medium text-muted-foreground">
-            /{selectedArticleQuizzes.length}
-          </span>
+        <div className="flex justify-between items-center text-2xl leading-8 font-semibold">
+          <div>
+            Your score: {userScore}
+            <span className="text-base leading-6 font-medium text-muted-foreground">
+              /{selectedArticleQuizzes.length}
+            </span>
+          </div>
+
+          <div>
+            Time spent:{" "}
+            <span className="text-base leading-6 font-medium text-muted-foreground">
+              {timeSpentOnQuiz}
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col gap-5">
@@ -108,7 +129,7 @@ export const QuizCompletedComp = ({
             Restart quiz
           </Button>
           <Button
-            onClick={() => saveQuizScoresHandler(quizScores)}
+            onClick={() => saveQuizAttemptScores(quizResult)}
             disabled={loading}
             size={"lg"}
             className="cursor-pointer"

@@ -9,27 +9,15 @@ datasource db {
 }
 
 model articles {
-  id        String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   title     String?
   content   String?
   summary   String?
-  userid    String?    @db.Uuid
-  createdat DateTime?  @default(now()) @db.Timestamptz(6)
-  updatedat DateTime?  @default(now()) @db.Timestamptz(6)
-  users     users?     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  attempts  attempts[]
-  quizzes   quizzes[]
-}
-
-model attempts {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  articleid String    @db.Uuid
-  userid    String?   @db.Uuid
-  timespent Int?
+  userid    String    @db.Uuid
   createdat DateTime? @default(now()) @db.Timestamptz(6)
   updatedat DateTime? @default(now()) @db.Timestamptz(6)
-  articles  articles  @relation(fields: [articleid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users     users?    @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users     users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  quizzes   quizzes[]
 }
 
 model courses {
@@ -60,14 +48,16 @@ model quizzes {
 }
 
 model scores {
-  id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  quizid    String    @db.Uuid
-  userid    String?   @db.Uuid
-  score     Int?
-  createdat DateTime? @default(now()) @db.Timestamptz(6)
-  updatedat DateTime? @default(now()) @db.Timestamptz(6)
-  quizzes   quizzes   @relation(fields: [quizid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  users     users?    @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  quizid        String    @db.Uuid
+  userid        String    @db.Uuid
+  score         Int?
+  useranswer    String?
+  correctanswer String?
+  createdat     DateTime? @default(now()) @db.Timestamptz(6)
+  updatedat     DateTime? @default(now()) @db.Timestamptz(6)
+  quizzes       quizzes   @relation(fields: [quizid], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  users         users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model students {
@@ -86,7 +76,6 @@ model users {
   createdat DateTime?  @default(now()) @db.Timestamptz(6)
   updatedat DateTime?  @default(now()) @db.Timestamptz(6)
   articles  articles[]
-  attempts  attempts[]
   scores    scores[]
 }
 

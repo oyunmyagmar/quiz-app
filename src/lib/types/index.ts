@@ -26,33 +26,32 @@ export type QuizType = {
   updatedat: string;
 };
 
+export type QuizResultType = {
+  quizQuestionId: string;
+  question?: string;
+  clientAnswer: string;
+  quizCorrectAnswer: string;
+  quizScore: number;
+};
+
 export type ScoreType = {
   id: string;
-  quizId: string;
+  quizid: string;
   userid?: string;
   score: number;
+  useranswer: string;
+  correctanswer: string;
   createdat: string;
   updatedat: string;
-  result: QuizResultType;
 };
 
 export type AttemptType = {
   id: string;
+  articleid: string;
   quizid: string;
   userid?: string;
   score: number;
   timeSpent: number;
   createdat: string;
   updatedat: string;
-};
-
-export type QuizResultType = {
-  quizQuestionId: string;
-  question: string;
-  clientAnswer?: string;
-  quizCorrectAnswer?: string;
-};
-
-export type QuizScoresType = {
-  quizScore: number;
 };

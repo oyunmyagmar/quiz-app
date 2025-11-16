@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { LuLoaderCircle } from "react-icons/lu";
 import { useParams } from "next/navigation";
-import { QuizResultType, QuizScoresType, QuizType } from "@/lib/types";
+import { QuizResultType, QuizType } from "@/lib/types";
 import { CancelAndRestartQuiz, QuizCompletedComp } from "@/app/_components";
 import { useQuiz } from "@/app/_hooks/use-quiz";
 
@@ -12,7 +12,6 @@ const QuizPage = () => {
   const { selectedArticleQuizzes } = useQuiz();
   const [step, setStep] = useState<number>(0);
   const [quizResult, setQuizResult] = useState<QuizResultType[]>([]);
-  const [quizScores, setQuizScores] = useState<QuizScoresType[]>([]); // hereggui bj mgad
   const [loading, setLoading] = useState<boolean>(false);
   const [sec, setSec] = useState<number>(0);
   const [timeIsRunning, setTimeIsRunning] = useState<boolean>(false);
@@ -23,16 +22,17 @@ const QuizPage = () => {
     (sec % 60 < 10 ? "0" : "") +
     (sec % 60);
 
+  console.log({ quizResult });
+
   const quizStepScoreHandler = (selectedAnswerI: string, quiz: QuizType) => {
     const quizCorrectAnswer = quiz.options[JSON.parse(quiz.answer)];
     const clientAnswer = quiz.options[JSON.parse(selectedAnswerI)];
 
+    let userQuizScore: number;
     if (quizCorrectAnswer === clientAnswer) {
-      const newQuizScores = [...quizScores, { quizScore: 1 }];
-      setQuizScores(newQuizScores);
-    } else if (quizCorrectAnswer !== clientAnswer) {
-      const newQuizScores = [...quizScores, { quizScore: 0 }];
-      setQuizScores(newQuizScores);
+      userQuizScore = 1;
+    } else {
+      userQuizScore = 0;
     }
 
     const newQuizResult = [
@@ -40,8 +40,9 @@ const QuizPage = () => {
       {
         quizQuestionId: quiz.id,
         question: quiz.question,
-        clientAnswer,
-        quizCorrectAnswer,
+        clientAnswer: clientAnswer,
+        quizCorrectAnswer: quizCorrectAnswer,
+        quizScore: userQuizScore,
       },
     ];
     if (newQuizResult) {
@@ -54,17 +55,8 @@ const QuizPage = () => {
   const restartQuizHandler = () => {
     setStep(0);
     setQuizResult([]);
-    setQuizScores([]);
     setSec(0);
   };
-
-  useEffect(() => {
-    if (step === 0) {
-      setTimeIsRunning(true);
-    } else if (step >= selectedArticleQuizzes.length) {
-      setTimeIsRunning(false);
-    }
-  }, [step]);
 
   useEffect(() => {
     if (!timeIsRunning) {
@@ -78,17 +70,10 @@ const QuizPage = () => {
   }, [timeIsRunning]);
 
   useEffect(() => {
-    if (selectedArticleQuizzes.length) {
-      if (step > selectedArticleQuizzes.length - 1) {
-        const saveAttemptAndScore = async () => {
-          await fetch(`/api/article/${articleId}/quizzes/attempts`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ sec, articleId, quizScores, quizResult }),
-          });
-        };
-        saveAttemptAndScore();
-      }
+    if (step === 0) {
+      setTimeIsRunning(true);
+    } else if (step >= selectedArticleQuizzes.length) {
+      setTimeIsRunning(false);
     }
   }, [step]);
 
@@ -156,16 +141,32 @@ const QuizPage = () => {
         </div>
       ) : (
         <QuizCompletedComp
+          articleId={articleId}
           selectedArticleQuizzes={selectedArticleQuizzes}
           quizResult={quizResult}
-          quizScores={quizScores}
           restartQuizHandler={restartQuizHandler}
-          articleId={articleId}
           setLoading={setLoading}
           loading={loading}
+          sec={sec}
+          timeSpentOnQuiz={timeSpentOnQuiz}
         />
       )}
     </div>
   );
 };
 export default QuizPage;
+
+// useEffect(() => {
+//   if (selectedArticleQuizzes.length) {
+//     if (step > selectedArticleQuizzes.length - 1) {
+//       const saveAttemptAndScore = async () => {
+//         await fetch(`/api/article/${articleId}/quizzes/attempts`, {
+//           method: "POST",
+//           headers: { "Content-Type": "application/json" },
+//           body: JSON.stringify({ sec, articleId, quizScores, quizResult }),
+//         });
+//       };
+//       saveAttemptAndScore();
+//     }
+//   }
+// }, [step]);
