@@ -5,6 +5,7 @@ import { PiBookOpen } from "react-icons/pi";
 import {
   QuizGeneratorHeading,
   SeeMoreContent,
+  SummarizedContentComp,
   TotalScoreComp,
 } from "@/app/_components";
 import {
@@ -63,18 +64,9 @@ const GeneratedArticlePage = () => {
       <div className="bg-background flex flex-col p-7 mt-26 mx-64 rounded-lg h-fit gap-5 text-primary border border-border">
         <QuizGeneratorHeading />
 
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-2 items-center">
-            <PiBookOpen size={16} className="text-foreground" />
-            <div className="text-sm leading-5 font-semibold text-[#737373]">
-              Summarized content
-            </div>
-          </div>
-          <div className="text-2xl leading-8 font-semibold">
-            {selectedArticle?.title}
-          </div>
-          <div className="text-sm leading-5">{selectedArticle?.summary}</div>
-        </div>
+        {selectedArticle && (
+          <SummarizedContentComp selectedArticle={selectedArticle} />
+        )}
 
         <div className="flex flex-col gap-2">
           <div className="flex gap-1 items-center">

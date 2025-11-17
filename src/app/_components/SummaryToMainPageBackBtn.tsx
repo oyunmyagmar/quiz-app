@@ -3,7 +3,7 @@ import { Button } from "@/components/ui";
 import { LuChevronLeft } from "react-icons/lu";
 import { useRouter } from "next/navigation";
 
-export const BackBtn = () => {
+export const SummaryToMainPageBackBtn = () => {
   const router = useRouter();
 
   return (

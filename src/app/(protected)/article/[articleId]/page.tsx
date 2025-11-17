@@ -1,14 +1,14 @@
 "use client";
 import React, { useState } from "react";
-import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
+import { Button, Dialog, DialogTrigger } from "@/components/ui";
 import { useRouter, useParams } from "next/navigation";
-import { PiBookOpen } from "react-icons/pi";
 import { LuLoaderCircle } from "react-icons/lu";
 import { toast } from "sonner";
 import {
-  BackBtn,
+  SummaryToMainPageBackBtn,
   QuizGeneratorHeading,
   SeeMoreContent,
+  SummarizedContentComp,
 } from "@/app/_components";
 import { useArticle } from "@/app/_hooks/use-article";
 
@@ -47,32 +47,14 @@ const ArticlePage = () => {
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
       <div className="mt-26 flex flex-col mx-64 gap-6">
-        <BackBtn />
+        <SummaryToMainPageBackBtn />
 
         <div className="bg-background flex flex-col p-7 rounded-lg h-fit gap-5 text-foreground font-semibold border border-border">
           <QuizGeneratorHeading />
 
-          <div className="flex flex-col gap-2 text-sm leading-5">
-            <div className="flex gap-2 items-center">
-              <PiBookOpen size={16} />
-              <Label className="text-[#737373]">Summarized content</Label>
-            </div>
-            <>
-              {!selectedArticle && (
-                <div className="flex justify-center items-center">
-                  <LuLoaderCircle size={24} className="animate-spin" />
-                </div>
-              )}
-            </>
-            {selectedArticle && (
-              <div className="flex flex-col gap-2">
-                <div className="text-2xl leading-8">
-                  {selectedArticle?.title}
-                </div>
-                <div className="font-normal">{selectedArticle?.summary}</div>
-              </div>
-            )}
-          </div>
+          {selectedArticle && (
+            <SummarizedContentComp selectedArticle={selectedArticle} />
+          )}
 
           <div className="flex justify-between">
             <Dialog>

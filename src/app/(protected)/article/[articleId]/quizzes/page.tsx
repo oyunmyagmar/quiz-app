@@ -141,7 +141,7 @@ const QuizPage = () => {
             })}
           </div>
         </div>
-      ) : (
+      ) : selectedArticleQuizzes.length === 5 ? (
         <QuizCompletedComp
           articleId={articleId}
           selectedArticleQuizzes={selectedArticleQuizzes}
@@ -152,6 +152,8 @@ const QuizPage = () => {
           sec={sec}
           timeSpentOnQuiz={timeSpentOnQuiz}
         />
+      ) : (
+        ""
       )}
     </div>
   );

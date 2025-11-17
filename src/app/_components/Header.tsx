@@ -1,20 +1,6 @@
 "use client";
 import React from "react";
 import { useRouter } from "next/navigation";
-import {
-  Button,
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui";
-import { TbPacman } from "react-icons/tb";
 import { UserButton } from "@clerk/nextjs";
 
 export const Header = () => {
