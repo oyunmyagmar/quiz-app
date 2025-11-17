@@ -6,3 +6,4 @@ export * from "./SeeMoreContent";
 export * from "./SideBarDrawer";
 export * from "./QuizGeneraterHeading";
 export * from "./BackBtn";
+export * from "./TotalScoreComp";

@@ -2,7 +2,11 @@
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PiBookOpen } from "react-icons/pi";
-import { QuizGeneratorHeading, SeeMoreContent } from "@/app/_components";
+import {
+  QuizGeneratorHeading,
+  SeeMoreContent,
+  TotalScoreComp,
+} from "@/app/_components";
 import {
   Drawer,
   DrawerContent,
@@ -18,34 +22,39 @@ import {
   Dialog,
   DialogTrigger,
   Label,
+  Separator,
 } from "@/components/ui";
 import { useArticle } from "@/app/_hooks/use-article";
-
-type quizResultsType = {
-  id: string;
-  articleid: string;
-  userid: string;
-  timespent: number;
-  createdat: string;
-  updatedat: string;
-};
+import { useUser } from "@clerk/nextjs";
+import { toast } from "sonner";
+import { QuizAllAttempts, QuizPrevResults } from "@/lib/types";
+import { LuCircleCheck } from "react-icons/lu";
+import { IoCloseCircleOutline } from "react-icons/io5";
 
 const GeneratedArticlePage = () => {
   const { selectedArticle } = useArticle();
   const { articleId } = useParams<{ articleId: string }>();
-
-  const [quizResults, setQuizResults] = useState<quizResultsType[]>([]);
+  const [quizAllAttempts, setQuizAllAttempts] = useState<QuizAllAttempts[]>([]);
+  const [quizPrevResults, setQuizPrevResults] = useState<QuizPrevResults[]>([]);
+  const { user } = useUser();
   const router = useRouter();
-  console.log({ quizResults });
 
   const getQuizResults = async () => {
-    const response = await fetch(`/api/article/${articleId}/quizzes/attempts`);
+    const response = await fetch(
+      `/api/article/${articleId}/quizzes/attempt-scores`
+    );
 
-    if (response.ok) {
-      const { data } = await response.json();
-      if (data) {
-        setQuizResults(data);
-      }
+    if (!response.ok) {
+      toast("Failed to get quiz results");
+    }
+
+    const { attempts, results } = await response.json();
+    console.log({ attempts }, { results });
+    if (results) {
+      setQuizPrevResults(results);
+    }
+    if (attempts) {
+      setQuizAllAttempts(attempts);
     }
   };
 
@@ -114,23 +123,59 @@ const GeneratedArticlePage = () => {
               </Button>
             </DrawerTrigger>
 
-            <DrawerContent className="data-[vaul-drawer-direction=right]:sm:max-w-fit">
+            <DrawerContent className="data-[vaul-drawer-direction=right]:sm:max-w-80">
               <DrawerHeader className="p-5">
-                <DrawerTitle>User:</DrawerTitle>
-                <DrawerDescription>History {}</DrawerDescription>
+                <DrawerTitle>User: {user?.firstName}</DrawerTitle>
+                <DrawerDescription>Previous attempts {}</DrawerDescription>
               </DrawerHeader>
 
-              <Tabs defaultValue="account" className="w-fit px-5">
-                {quizResults &&
-                  quizResults.map((el, i) => (
-                    <div key={el.id}>
+              <Tabs defaultValue="account" className="w-full px-5">
+                {quizAllAttempts &&
+                  quizAllAttempts.map((attempt, i) => (
+                    <div key={attempt.id}>
+                      <TotalScoreComp
+                        attempt={attempt}
+                        quizPrevResults={quizPrevResults}
+                      />
                       <TabsList>
                         <TabsTrigger value={`attempt${i}`}>
-                          Attempt {i + 1}: {el.id}
+                          Attempt {i + 1}:
                         </TabsTrigger>
                       </TabsList>
                       <TabsContent value={`attempt${i}`}>
-                        Time spent: {el.timespent}
+                        <div className="flex justify-between text-sm leading-5 font-medium">
+                          <div> Time spent: {attempt.timespent}</div>
+                        </div>
+
+                        {quizPrevResults
+                          .filter((res) => res.attemptid === attempt.id)
+                          .map((el, i) => (
+                            <div
+                              key={el.id}
+                              className="flex gap-1 text-xs leading-4 font-medium"
+                            >
+                              <div>
+                                {el.useranswer !== el.correctanswer ? (
+                                  <IoCloseCircleOutline className="text-red-700" />
+                                ) : (
+                                  <LuCircleCheck className="text-green-500" />
+                                )}
+                              </div>
+                              <div className="flex flex-col gap-0.5">
+                                <div className="text-muted-foreground">
+                                  {i + 1}. {""}
+                                </div>
+                                <div className="text-foreground">
+                                  {el.useranswer}
+                                </div>
+                                <div className="text-green-500">
+                                  {el.correctanswer !== el.useranswer &&
+                                    `Your answer: ${el.correctanswer}`}
+                                </div>
+                                <Separator className="w-full border-t border-dashed" />
+                              </div>
+                            </div>
+                          ))}
                       </TabsContent>
                     </div>
                   ))}

@@ -157,18 +157,3 @@ const QuizPage = () => {
   );
 };
 export default QuizPage;
-
-// useEffect(() => {
-//   if (selectedArticleQuizzes.length) {
-//     if (step > selectedArticleQuizzes.length - 1) {
-//       const saveAttemptAndScore = async () => {
-//         await fetch(`/api/article/${articleId}/quizzes/attempts`, {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({ sec, articleId, quizScores, quizResult }),
-//         });
-//       };
-//       saveAttemptAndScore();
-//     }
-//   }
-// }, [step]);
