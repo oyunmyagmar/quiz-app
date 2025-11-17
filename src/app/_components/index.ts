@@ -7,3 +7,8 @@ export * from "./QuizGeneratorHeading";
 export * from "./SummaryToMainPageBackBtn";
 export * from "./TotalScoreComp";
 export * from "./SummarizedContentComp";
+export * from "./QuizCompletedHeading";
+export * from "./QuizCompletedCompScoreAndTime";
+export * from "./QuizCompletedCompResult";
+export * from "./MainQuiz";
+export * from "./PrevAttemptsHistoryComp";

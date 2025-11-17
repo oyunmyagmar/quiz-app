@@ -2,12 +2,16 @@
 import React from "react";
 import { RxReload } from "react-icons/rx";
 import { Button } from "@/components/ui";
-import { LuCircleCheck, LuBookmark } from "react-icons/lu";
-import { IoCloseCircleOutline } from "react-icons/io5";
+import { LuBookmark } from "react-icons/lu";
 import { QuizResultType, QuizType } from "@/lib/types";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
+import {
+  QuizCompletedCompResult,
+  QuizCompletedCompScoreAndTime,
+  QuizCompletedHeading,
+} from "@/app/_components";
 
 export const QuizCompletedComp = ({
   articleId,
@@ -31,12 +35,10 @@ export const QuizCompletedComp = ({
   const router = useRouter();
   const { user } = useUser();
   const clerkId = user?.id;
-  let userScore = 0;
-  quizResult.forEach((item) => (userScore += item.quizScore));
 
   const saveQuizAttemptScores = async (quizResult: QuizResultType[]) => {
-    if (!quizResult || !sec) {
-      toast.warning("Quiz result is required");
+    if (!clerkId || !quizResult || !sec || !articleId) {
+      toast.warning("Missing required fields!");
     }
 
     setLoading(true);
@@ -66,55 +68,18 @@ export const QuizCompletedComp = ({
 
   return (
     <div className="flex flex-col mt-44 mx-50 gap-6 text-foreground">
-      <div className="flex flex-col gap-2">
-        <div className="flex gap-2 items-center text-2xl leading-8 font-semibold">
-          <img src="/article-icon.svg" alt="" className="w-6 h-6" />
-          <div>Quiz completed</div>
-        </div>
-        <div className="text-base leading-6 font-medium text-muted-foreground">
-          Let’s see what you did
-        </div>
-      </div>
+      <QuizCompletedHeading />
 
       <div className="w-full bg-background rounded-lg p-7 border border-border flex flex-col gap-7">
-        <div className="flex justify-between items-center text-2xl leading-8 font-semibold">
-          <div>
-            Your score: {userScore}
-            <span className="text-base leading-6 font-medium text-muted-foreground">
-              /{selectedArticleQuizzes.length}
-            </span>
-          </div>
-
-          <div>
-            Time spent:{" "}
-            <span className="text-base leading-6 font-medium text-muted-foreground">
-              {timeSpentOnQuiz}
-            </span>
-          </div>
-        </div>
+        <QuizCompletedCompScoreAndTime
+          selectedArticleQuizzes={selectedArticleQuizzes}
+          quizResult={quizResult}
+          timeSpentOnQuiz={timeSpentOnQuiz}
+        />
 
         <div className="flex flex-col gap-5">
           {quizResult.map((res, i) => (
-            <div key={i} className="flex gap-3">
-              <div>
-                {res.clientAnswer !== res.quizCorrectAnswer ? (
-                  <IoCloseCircleOutline size={22} className="text-red-700" />
-                ) : (
-                  <LuCircleCheck size={22} className="text-green-500" />
-                )}
-              </div>
-              <div className="flex flex-col gap-1 text-xs leading-4 font-medium">
-                <div className="text-muted-foreground">
-                  <span>{i + 1}. </span>
-                  {res.question}
-                </div>
-                <div>Your answer: {res.clientAnswer}</div>
-                <div className="text-green-500">
-                  {res.clientAnswer !== res.quizCorrectAnswer &&
-                    `Correct: ${res.quizCorrectAnswer}`}
-                </div>
-              </div>
-            </div>
+            <QuizCompletedCompResult res={res} i={i} />
           ))}
         </div>
 

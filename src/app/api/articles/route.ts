@@ -1,9 +1,11 @@
 import { prisma } from "@/lib/prisma";
+import { getDraftModeProviderForCacheScope } from "next/dist/server/app-render/work-unit-async-storage.external";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async () => {
   const articles = await prisma.articles.findMany({
     orderBy: { createdat: "asc" },
+    select: { id: true, title: true },
   });
 
   return NextResponse.json({ data: articles }, { status: 200 });
@@ -24,6 +26,12 @@ export const POST = async (request: NextRequest) => {
     where: { clerkid: userClerkId },
   });
 
+  if (!user) {
+    return NextResponse.json(
+      { error: "Missing required field!" },
+      { status: 400 }
+    );
+  }
   const article = await prisma.articles.create({
     data: {
       title: title,

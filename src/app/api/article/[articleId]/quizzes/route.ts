@@ -16,6 +16,7 @@ export const GET = async (
     where: {
       articleid: articleId,
     },
+    omit: { createdat: true, updatedat: true },
   });
 
   return NextResponse.json({ data: quizCollection }, { status: 200 });

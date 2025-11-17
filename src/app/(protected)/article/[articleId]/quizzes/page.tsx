@@ -1,10 +1,13 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { Button } from "@/components/ui";
 import { LuLoaderCircle } from "react-icons/lu";
 import { useParams } from "next/navigation";
 import { QuizResultType, QuizType } from "@/lib/types";
-import { CancelAndRestartQuiz, QuizCompletedComp } from "@/app/_components";
+import {
+  CancelAndRestartQuiz,
+  MainQuiz,
+  QuizCompletedComp,
+} from "@/app/_components";
 import { useQuiz } from "@/app/_hooks/use-quiz";
 
 const QuizPage = () => {
@@ -21,8 +24,6 @@ const QuizPage = () => {
     ":" +
     (sec % 60 < 10 ? "0" : "") +
     (sec % 60);
-
-  console.log({ quizResult });
 
   const quizStepScoreHandler = (selectedAnswerI: string, quiz: QuizType) => {
     const quizCorrectAnswer = quiz.options[JSON.parse(quiz.answer)];
@@ -108,37 +109,11 @@ const QuizPage = () => {
               </div>
             )}
 
-            {selectedArticleQuizzes.map((quiz, i) => {
-              return (
-                step === i && (
-                  <div key={quiz.id} className="flex flex-col gap-5">
-                    <div className="flex gap-2 text-xl leading-7 font-medium">
-                      <div className="w-auto">{quiz.question}</div>
-                      <div>
-                        {i + 1}
-                        <span className="text-base leading-6 text-muted-foreground">
-                          /{selectedArticleQuizzes.length}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      {quiz.options.map((option, index) => (
-                        <Button
-                          onClick={() => {
-                            quizStepScoreHandler(index.toString(), quiz);
-                          }}
-                          key={option}
-                          variant={"outline"}
-                          className="w-auto min-h-10 h-auto whitespace-pre-wrap cursor-pointer"
-                        >
-                          {option}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-                )
-              );
-            })}
+            <MainQuiz
+              selectedArticleQuizzes={selectedArticleQuizzes}
+              step={step}
+              quizStepScoreHandler={quizStepScoreHandler}
+            />
           </div>
         </div>
       ) : selectedArticleQuizzes.length === 5 ? (

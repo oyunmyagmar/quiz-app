@@ -11,6 +11,7 @@ export const GET = async (
     where: {
       id: articleId,
     },
+    omit: { userid: true, createdat: true, updatedat: true },
   });
 
   return NextResponse.json({ data: article }, { status: 200 });

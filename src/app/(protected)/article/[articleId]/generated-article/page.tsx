@@ -1,42 +1,28 @@
 "use client";
 import React, { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { PiBookOpen } from "react-icons/pi";
 import {
+  PrevAttemptsHistoryComp,
   QuizGeneratorHeading,
   SeeMoreContent,
   SummarizedContentComp,
   TotalScoreComp,
 } from "@/app/_components";
-import {
-  Drawer,
-  DrawerContent,
-  DrawerDescription,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-  Button,
-  Dialog,
-  DialogTrigger,
-  Label,
-  Separator,
-} from "@/components/ui";
+import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
 import { useArticle } from "@/app/_hooks/use-article";
 import { useUser } from "@clerk/nextjs";
 import { toast } from "sonner";
-import { QuizAllAttempts, QuizPrevResults } from "@/lib/types";
-import { LuCircleCheck } from "react-icons/lu";
-import { IoCloseCircleOutline } from "react-icons/io5";
+import { QuizAllAttemptsType, QuizPrevScoreResultsType } from "@/lib/types";
 
 const GeneratedArticlePage = () => {
   const { selectedArticle } = useArticle();
   const { articleId } = useParams<{ articleId: string }>();
-  const [quizAllAttempts, setQuizAllAttempts] = useState<QuizAllAttempts[]>([]);
-  const [quizPrevResults, setQuizPrevResults] = useState<QuizPrevResults[]>([]);
+  const [quizAllAttempts, setQuizAllAttempts] = useState<QuizAllAttemptsType[]>(
+    []
+  );
+  const [quizPrevScoreResults, setQuizPrevScoreResults] = useState<
+    QuizPrevScoreResultsType[]
+  >([]);
   const { user } = useUser();
   const router = useRouter();
 
@@ -49,10 +35,10 @@ const GeneratedArticlePage = () => {
       toast("Failed to get quiz results");
     }
 
-    const { attempts, results } = await response.json();
-    console.log({ attempts }, { results });
-    if (results) {
-      setQuizPrevResults(results);
+    const { attempts, scores } = await response.json();
+    console.log({ attempts }, { scores });
+    if (scores) {
+      setQuizPrevScoreResults(scores);
     }
     if (attempts) {
       setQuizAllAttempts(attempts);
@@ -103,77 +89,7 @@ const GeneratedArticlePage = () => {
             Take a quiz
           </Button>
 
-          <Drawer direction="right">
-            <DrawerTrigger asChild>
-              <Button
-                onClick={getQuizResults}
-                size={"lg"}
-                variant={"outline"}
-                className="w-fit cursor-pointer"
-              >
-                View previous results
-              </Button>
-            </DrawerTrigger>
-
-            <DrawerContent className="data-[vaul-drawer-direction=right]:sm:max-w-80">
-              <DrawerHeader className="p-5">
-                <DrawerTitle>User: {user?.firstName}</DrawerTitle>
-                <DrawerDescription>Previous attempts {}</DrawerDescription>
-              </DrawerHeader>
-
-              <Tabs defaultValue="account" className="w-full px-5">
-                {quizAllAttempts &&
-                  quizAllAttempts.map((attempt, i) => (
-                    <div key={attempt.id}>
-                      <TotalScoreComp
-                        attempt={attempt}
-                        quizPrevResults={quizPrevResults}
-                      />
-                      <TabsList>
-                        <TabsTrigger value={`attempt${i}`}>
-                          Attempt {i + 1}:
-                        </TabsTrigger>
-                      </TabsList>
-                      <TabsContent value={`attempt${i}`}>
-                        <div className="flex justify-between text-sm leading-5 font-medium">
-                          <div> Time spent: {attempt.timespent}</div>
-                        </div>
-
-                        {quizPrevResults
-                          .filter((res) => res.attemptid === attempt.id)
-                          .map((el, i) => (
-                            <div
-                              key={el.id}
-                              className="flex gap-1 text-xs leading-4 font-medium"
-                            >
-                              <div>
-                                {el.useranswer !== el.correctanswer ? (
-                                  <IoCloseCircleOutline className="text-red-700" />
-                                ) : (
-                                  <LuCircleCheck className="text-green-500" />
-                                )}
-                              </div>
-                              <div className="flex flex-col gap-0.5">
-                                <div className="text-muted-foreground">
-                                  {i + 1}. {""}
-                                </div>
-                                <div className="text-foreground">
-                                  {el.useranswer}
-                                </div>
-                                <div className="text-green-500">
-                                  {el.correctanswer !== el.useranswer &&
-                                    `Your answer: ${el.correctanswer}`}
-                                </div>
-                                <Separator className="w-full border-t border-dashed" />
-                              </div>
-                            </div>
-                          ))}
-                      </TabsContent>
-                    </div>
-                  ))}
-              </Tabs>
-            </DrawerContent>
-          </Drawer>
+          <PrevAttemptsHistoryComp />
         </div>
       </div>
     </div>

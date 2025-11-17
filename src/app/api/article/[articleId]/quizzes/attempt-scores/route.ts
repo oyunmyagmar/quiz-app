@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { QuizPrevScoreResultsType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -9,19 +10,19 @@ export async function GET(
 
   const attempts = await prisma.attempts.findMany({
     where: { articleid: articleId },
-    orderBy: { id: "asc" },
+    orderBy: { createdat: "asc" },
   });
 
-  const results = await prisma.scores.findMany({
+  const scores = await prisma.scores.findMany({
     where: { quizzes: { articleid: articleId } },
   });
-  console.log({ attempts, results });
-  return NextResponse.json({ attempts, results });
+  console.log({ attempts, scores });
+  return NextResponse.json({ attempts, scores });
 }
 
 export async function POST(request: NextRequest) {
   const { userClerkId, quizResult, sec, articleId } = await request.json();
-  console.log({ userClerkId, quizResult, sec, articleId });
+  console.log({ quizResult });
 
   const user = await prisma.users.findUnique({
     where: { clerkid: userClerkId },
@@ -50,12 +51,10 @@ export async function POST(request: NextRequest) {
           correctanswer: item.quizCorrectAnswer,
         },
       });
-      console.log({ score });
     });
 
-  console.log({ attempt });
   return NextResponse.json({
     message: "Result added to DB successfully",
-    data: "",
+    status: 200,
   });
 }
