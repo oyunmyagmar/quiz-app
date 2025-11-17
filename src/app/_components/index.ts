@@ -11,4 +11,4 @@ export * from "./QuizCompletedHeading";
 export * from "./QuizCompletedCompScoreAndTime";
 export * from "./QuizCompletedCompResult";
 export * from "./MainQuiz";
-export * from "./PrevAttemptsHistoryComp";
+export * from "./ViewPrevResultsBtnComp";

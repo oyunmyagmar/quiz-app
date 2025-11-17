@@ -11,6 +11,15 @@ export async function GET(
   const attempts = await prisma.attempts.findMany({
     where: { articleid: articleId },
     orderBy: { createdat: "asc" },
+    omit: { userid: true, createdat: true, updatedat: true },
+    include: {
+     articles:{while (quizid:) {
+      
+     }},  scores: {
+        where: { quizzes: { articleid: articleId } },
+        select: { score: true, useranswer: true, correctanswer: true },
+      },
+    },
   });
 
   const scores = await prisma.scores.findMany({
@@ -57,4 +66,40 @@ export async function POST(request: NextRequest) {
     message: "Result added to DB successfully",
     status: 200,
   });
+}
+// const attempts = await prisma.attempts.findMany({
+//   where: { articleid: articleId },
+//   orderBy: { createdat: "asc" },
+//   include: {
+//     scores: {
+//       where: { quizzes: { articleid: articleId } },
+//       select: {
+//         score: true,
+//         useranswer: true,
+//         correctanswer: true,
+//         quizzes: {
+//           select: {
+//             question: true,
+//             options: true, // if you want options too
+//             id: true,
+//           },
+//         },
+//       },
+//     },
+//   },
+// });
+{
+  "id": "attempt1",
+  "scores": [
+    {
+      "score": 1,
+      "useranswer": "Paris",
+      "correctanswer": "Paris",
+      "quizzes": {
+        "id": "quiz123",
+        "question": "What is the capital of France?",
+        "options": ["London", "Berlin", "Paris", "Madrid"]
+      }
+    }
+  ]
 }

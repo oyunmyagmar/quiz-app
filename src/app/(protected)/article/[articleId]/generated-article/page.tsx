@@ -1,49 +1,19 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
 import { useParams, useRouter } from "next/navigation";
 import {
-  PrevAttemptsHistoryComp,
+  ViewPrevResultsBtnComp,
   QuizGeneratorHeading,
   SeeMoreContent,
   SummarizedContentComp,
-  TotalScoreComp,
 } from "@/app/_components";
 import { Button, Dialog, DialogTrigger, Label } from "@/components/ui";
 import { useArticle } from "@/app/_hooks/use-article";
-import { useUser } from "@clerk/nextjs";
-import { toast } from "sonner";
-import { QuizAllAttemptsType, QuizPrevScoreResultsType } from "@/lib/types";
 
 const GeneratedArticlePage = () => {
   const { selectedArticle } = useArticle();
   const { articleId } = useParams<{ articleId: string }>();
-  const [quizAllAttempts, setQuizAllAttempts] = useState<QuizAllAttemptsType[]>(
-    []
-  );
-  const [quizPrevScoreResults, setQuizPrevScoreResults] = useState<
-    QuizPrevScoreResultsType[]
-  >([]);
-  const { user } = useUser();
   const router = useRouter();
-
-  const getQuizResults = async () => {
-    const response = await fetch(
-      `/api/article/${articleId}/quizzes/attempt-scores`
-    );
-
-    if (!response.ok) {
-      toast("Failed to get quiz results");
-    }
-
-    const { attempts, scores } = await response.json();
-    console.log({ attempts }, { scores });
-    if (scores) {
-      setQuizPrevScoreResults(scores);
-    }
-    if (attempts) {
-      setQuizAllAttempts(attempts);
-    }
-  };
 
   return (
     <div className="w-full h-full bg-secondary flex justify-center">
@@ -89,7 +59,7 @@ const GeneratedArticlePage = () => {
             Take a quiz
           </Button>
 
-          <PrevAttemptsHistoryComp />
+          <ViewPrevResultsBtnComp articleId={articleId} />
         </div>
       </div>
     </div>

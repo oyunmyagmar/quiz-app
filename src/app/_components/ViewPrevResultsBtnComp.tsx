@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useState } from "react";
 import {
   Drawer,
   DrawerContent,
@@ -15,8 +16,43 @@ import {
 } from "@/components/ui";
 import { LuCircleCheck } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import { QuizAllAttemptsType, QuizPrevScoreResultsType } from "@/lib/types";
+import { toast } from "sonner";
+import { useUser } from "@clerk/nextjs";
+import { TotalScoreComp } from "@/app/_components";
 
-export const PrevAttemptsHistoryComp = () => {
+export const ViewPrevResultsBtnComp = ({
+  articleId,
+}: {
+  articleId: string;
+}) => {
+  const [quizAllAttempts, setQuizAllAttempts] = useState<QuizAllAttemptsType[]>(
+    []
+  );
+  const [quizPrevScoreResults, setQuizPrevScoreResults] = useState<
+    QuizPrevScoreResultsType[]
+  >([]);
+  const { user } = useUser();
+
+  const getQuizResults = async () => {
+    const response = await fetch(
+      `/api/article/${articleId}/quizzes/attempt-scores`
+    );
+
+    if (!response.ok) {
+      toast("Failed to get quiz results");
+    }
+
+    const { attempts, scores } = await response.json();
+    console.log({ attempts }, { scores });
+    if (scores) {
+      setQuizPrevScoreResults(scores);
+    }
+    if (attempts) {
+      setQuizAllAttempts(attempts);
+    }
+  };
+
   return (
     <Drawer direction="right">
       <DrawerTrigger asChild>
