@@ -1,4 +1,3 @@
-import { query } from "@/lib/connectDb";
 import { prisma } from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
 

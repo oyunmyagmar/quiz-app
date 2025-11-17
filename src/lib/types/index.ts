@@ -37,7 +37,8 @@ export type QuizResultType = {
 export type ScoreType = {
   id: string;
   quizid: string;
-  userid?: string;
+  userid: string;
+  attemptid: string;
   score: number;
   useranswer: string;
   correctanswer: string;
@@ -48,9 +49,7 @@ export type ScoreType = {
 export type AttemptType = {
   id: string;
   articleid: string;
-  quizid: string;
-  userid?: string;
-  score: number;
+  userid: string;
   timeSpent: number;
   createdat: string;
   updatedat: string;

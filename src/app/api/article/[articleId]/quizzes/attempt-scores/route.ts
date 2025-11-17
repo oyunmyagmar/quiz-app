@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { QuizResultType, ScoreType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -10,23 +9,26 @@ export async function POST(request: NextRequest) {
     where: { clerkid: userClerkId },
   });
 
-  quizResult.map(async (item: any) => {
-    const score = await prisma.scores.create({
-      data: {
-        quizid: item.quizQuestionId,
-        userid: user?.id,
-        score: item.quizScore,
-        useranswer: item.clientAnswer,
-        correctanswer: item.quizCorrectAnswer,
-      },
+  const attempt = await prisma.attempts.create({
+    data: { articleid: articleId, userid: user?.id, timespent: sec },
+  });
+
+  attempt &&
+    quizResult.map(async (item: any) => {
+      const score = await prisma.scores.create({
+        data: {
+          quizid: item.quizQuestionId,
+          userid: user?.id,
+          attemptid: attempt.id,
+          score: item.quizScore,
+          useranswer: item.clientAnswer,
+          correctanswer: item.quizCorrectAnswer,
+        },
+      });
+      console.log({ score });
     });
-  });
 
-  const totalScores = await prisma.scores.count({
-    where: { quizzes: { articleid: articleId } },
-  });
-  console.log({ totalScores });
-
+  console.log({ attempt });
   return NextResponse.json({
     message: "Result added to DB successfully",
     data: "",

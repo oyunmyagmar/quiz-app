@@ -95,9 +95,11 @@ const QuizPage = () => {
             <CancelAndRestartQuiz restartQuizHandler={restartQuizHandler} />
           </div>
 
-          <div className="text-base leading-6 font-medium text-muted-foreground">
-            Timer: {timeSpentOnQuiz}
-          </div>
+          {selectedArticleQuizzes.length > 0 && (
+            <div className="text-base leading-6 font-medium text-muted-foreground">
+              Timer: {timeSpentOnQuiz}
+            </div>
+          )}
 
           <div className="w-full bg-background rounded-lg p-7 border border-border">
             {loading && (
