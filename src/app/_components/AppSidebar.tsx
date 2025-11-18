@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { ArticleType } from "@/lib/types";
 import useSWR from "swr";
+import { TiDelete } from "react-icons/ti";
+import { toast } from "sonner";
 
 export function AppSidebar() {
   const [open, setOpen] = useState<boolean>(false);
@@ -13,6 +15,11 @@ export function AppSidebar() {
     `/articles`,
     fetcher
   );
+  const [loading, setLoading] = useState(false);
+
+  const handleSidebar = () => {
+    setOpen(!open);
+  };
 
   async function fetcher(path: string) {
     const response = await fetch("/api" + path);
@@ -24,8 +31,21 @@ export function AppSidebar() {
     return null;
   }
 
-  const handleSidebar = () => {
-    setOpen(!open);
+  const deleteSelectedArticle = async (articleId: string) => {
+    if (confirm("Are you sure you want to delete this article?")) {
+      setLoading(true);
+
+      const res = await fetch(`/api/article/${articleId}`, {
+        method: "DELETE",
+      });
+
+      if (!res) {
+        toast.error("Delete failed!");
+      }
+
+      toast.success("Delete successful");
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,7 +58,7 @@ export function AppSidebar() {
 
           <div className="flex flex-col gap-1">
             {allArticles.map((article) => (
-              <div className="flex items-center">
+              <div key={article.id} className="flex items-center gap-1">
                 <Button
                   onClick={() => {
                     router.push(`/article/${article.id}/generated-article`);
@@ -49,7 +69,14 @@ export function AppSidebar() {
                 >
                   {article.title}
                 </Button>
-                <Button variant={"outline"} />
+                <Button
+                  disabled={loading}
+                  onClick={() => deleteSelectedArticle(article.id)}
+                  variant={"ghost"}
+                  className="hover:text-red-500 cursor-pointer"
+                >
+                  <TiDelete size={16} />
+                </Button>
               </div>
             ))}
           </div>
