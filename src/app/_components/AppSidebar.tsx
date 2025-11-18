@@ -49,7 +49,7 @@ export function AppSidebar() {
                 >
                   {article.title}
                 </Button>
-                <Button />
+                <Button variant={"outline"} />
               </div>
             ))}
           </div>
