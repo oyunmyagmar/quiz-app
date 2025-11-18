@@ -1,22 +1,19 @@
-import { QuizAllAttemptsType, QuizPrevScoreResultsType } from "@/lib/types";
+import { QuizAttemptScoreType } from "@/lib/types";
 import React from "react";
 
 export const TotalScoreComp = ({
-  attempt,
-  quizPrevScoreResults,
+  attemptScores,
 }: {
-  attempt: QuizAllAttemptsType;
-  quizPrevScoreResults: QuizPrevScoreResultsType[];
+  attemptScores: QuizAttemptScoreType[];
 }) => {
-  let userPrevScore = 0;
-
-  quizPrevScoreResults
-    .filter((el) => el.attemptid === attempt.id)
-    .forEach((item) => (userPrevScore += item.score));
+  let userPrevTotalScore = 0;
+  attemptScores.forEach(
+    (attempScore) => (userPrevTotalScore += attempScore.score)
+  );
 
   return (
     <div className="text-sm leading-5 font-medium">
-      Total score: {userPrevScore}
+      Total score: {userPrevTotalScore}
     </div>
   );
 };

@@ -79,7 +79,7 @@ export const QuizCompletedComp = ({
 
         <div className="flex flex-col gap-5">
           {quizResult.map((res, i) => (
-            <QuizCompletedCompResult res={res} i={i} />
+            <QuizCompletedCompResult key={res.quizQuestionId} res={res} i={i} />
           ))}
         </div>
 

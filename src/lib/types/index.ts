@@ -62,6 +62,13 @@ export type QuizAllAttemptsType = {
   timespent: number;
   createdat: string;
   updatedat: string;
+  scores: QuizAttemptScoreType[];
+};
+export type QuizAttemptScoreType = {
+  score: number;
+  useranswer: string;
+  correctanswer: string;
+  quizzes: { quizid: string; question: string };
 };
 
 export type QuizPrevScoreResultsType = {

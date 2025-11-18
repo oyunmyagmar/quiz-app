@@ -29,9 +29,6 @@ export const ViewPrevResultsBtnComp = ({
   const [quizAllAttempts, setQuizAllAttempts] = useState<QuizAllAttemptsType[]>(
     []
   );
-  const [quizPrevScoreResults, setQuizPrevScoreResults] = useState<
-    QuizPrevScoreResultsType[]
-  >([]);
   const { user } = useUser();
 
   const getQuizResults = async () => {
@@ -43,11 +40,8 @@ export const ViewPrevResultsBtnComp = ({
       toast("Failed to get quiz results");
     }
 
-    const { attempts, scores } = await response.json();
-    console.log({ attempts }, { scores });
-    if (scores) {
-      setQuizPrevScoreResults(scores);
-    }
+    const { attempts } = await response.json();
+
     if (attempts) {
       setQuizAllAttempts(attempts);
     }
@@ -69,7 +63,9 @@ export const ViewPrevResultsBtnComp = ({
       <DrawerContent className="data-[vaul-drawer-direction=right]:sm:max-w-80">
         <DrawerHeader className="p-5">
           <DrawerTitle>User: {user?.firstName}</DrawerTitle>
-          <DrawerDescription>Previous attempts {}</DrawerDescription>
+          <DrawerDescription>
+            Previous attempts: {quizAllAttempts.length}
+          </DrawerDescription>
         </DrawerHeader>
 
         <Tabs defaultValue="account" className="w-full px-5">
@@ -82,41 +78,51 @@ export const ViewPrevResultsBtnComp = ({
                   </TabsTrigger>
                 </TabsList>
 
-                <TabsContent value={`attempt${i}`}>
-                  <TotalScoreComp
-                    attempt={attempt}
-                    quizPrevScoreResults={quizPrevScoreResults}
-                  />
-                  <div className="flex justify-between text-sm leading-5 font-medium">
-                    <div> Time spent: {attempt.timespent}</div>
+                <TabsContent
+                  value={`attempt${i}`}
+                  className="flex flex-col gap-2 mt-1"
+                >
+                  <div className="flex justify-between">
+                    <TotalScoreComp attemptScores={attempt.scores} />
+                    <div className="text-sm leading-5 font-medium">
+                      Time spent: {attempt.timespent}
+                    </div>
                   </div>
-                  {quizPrevScoreResults
-                    .filter((res) => res.attemptid === attempt.id)
-                    .map((el, i) => (
+                  <div className="flex flex-col gap-1">
+                    {attempt.scores.map((el, i) => (
                       <div
-                        key={el.id}
+                        key={el.correctanswer}
                         className="flex gap-1 text-xs leading-4 font-medium"
                       >
                         <div>
                           {el.useranswer !== el.correctanswer ? (
-                            <IoCloseCircleOutline className="text-red-700" />
+                            <IoCloseCircleOutline
+                              size={24}
+                              className="text-red-700"
+                            />
                           ) : (
-                            <LuCircleCheck className="text-green-500" />
+                            <LuCircleCheck
+                              size={24}
+                              className="text-green-500"
+                            />
                           )}
                         </div>
                         <div className="flex flex-col gap-0.5">
                           <div className="text-muted-foreground">
-                            {i + 1}. {""}
+                            {i + 1}. {el.quizzes.question}
                           </div>
-                          <div className="text-foreground">{el.useranswer}</div>
+                          <div className="text-foreground">
+                            Your answer: {el.useranswer}
+                          </div>
                           <div className="text-green-500">
                             {el.correctanswer !== el.useranswer &&
-                              `Your answer: ${el.correctanswer}`}
+                              `Correct: ${el.correctanswer}`}
                           </div>
                           <Separator className="w-full border-t border-dashed" />
                         </div>
                       </div>
                     ))}
+                  </div>
                 </TabsContent>
               </div>
             ))}

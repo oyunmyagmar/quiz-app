@@ -24,11 +24,7 @@ export async function GET(
     },
   });
 
-  const scores = await prisma.scores.findMany({
-    where: { quizzes: { articleid: articleId } },
-  });
-  console.log({ attempts, scores });
-  return NextResponse.json({ attempts, scores });
+  return NextResponse.json({ attempts });
 }
 
 export async function POST(request: NextRequest) {
