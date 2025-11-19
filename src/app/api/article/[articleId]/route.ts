@@ -22,10 +22,14 @@ export const DELETE = async (
   { params }: { params: Promise<{ articleId: string }> }
 ) => {
   const { articleId } = await params;
-
+  // zuvhun ter article -iin attempts id--ig olood score deere ugch yabulj ustgana
   const deleteScores = prisma.scores.deleteMany();
-  const deleteAttempts = prisma.attempts.deleteMany();
-  const deleteQuizzes = prisma.quizzes.deleteMany();
+  const deleteAttempts = prisma.attempts.deleteMany({
+    where: { articleid: articleId },
+  });
+  const deleteQuizzes = prisma.quizzes.deleteMany({
+    where: { articleid: articleId },
+  });
   const deleteArticle = prisma.articles.delete({ where: { id: articleId } });
 
   await prisma.$transaction([
