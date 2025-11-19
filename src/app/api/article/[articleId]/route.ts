@@ -22,8 +22,18 @@ export const DELETE = async (
   { params }: { params: Promise<{ articleId: string }> }
 ) => {
   const { articleId } = await params;
+
+  const attempts = await prisma.attempts.findMany({
+    where: { articleid: articleId },
+    select: { id: true },
+  });
+
+  const attemptsIds = attempts.map((el) => el.id);
+
   // zuvhun ter article -iin attempts id--ig olood score deere ugch yabulj ustgana
-  const deleteScores = prisma.scores.deleteMany();
+  const deleteScores = prisma.scores.deleteMany({
+    where: { attemptid: { in: attemptsIds } },
+  });
   const deleteAttempts = prisma.attempts.deleteMany({
     where: { articleid: articleId },
   });

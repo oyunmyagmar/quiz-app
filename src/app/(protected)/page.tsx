@@ -56,11 +56,11 @@ const Homepage = () => {
     mutate("/articles");
 
     if (!res.ok) {
-      toast.error("Failed to add article to DB!");
+      toast.error("Failed to add article!");
     }
 
     const { data } = await res.json();
-    toast.success("Article added to DB successfully");
+    toast.success("Article added successfully");
     setArticleTitle("");
     setArticleContent("");
     setLoading(false);

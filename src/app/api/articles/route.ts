@@ -1,5 +1,4 @@
 import { prisma } from "@/lib/prisma";
-import { getDraftModeProviderForCacheScope } from "next/dist/server/app-render/work-unit-async-storage.external";
 import { NextRequest, NextResponse } from "next/server";
 
 export const GET = async () => {
