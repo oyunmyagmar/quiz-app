@@ -1,8 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import { Button } from "@/components/ui";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 import { ArticleType } from "@/lib/types";
 import useSWR from "swr";
 import { TiDelete } from "react-icons/ti";

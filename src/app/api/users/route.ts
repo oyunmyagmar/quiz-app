@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
   });
 
   if (existingUser?.clerkid !== clerkId) {
-    const newUser = await prisma.users.create({
+    await prisma.users.create({
       data: { clerkid: clerkId, email: email, name: name },
     });
   }

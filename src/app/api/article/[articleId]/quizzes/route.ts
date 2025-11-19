@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
 
   try {
     quizObj.map(async (item: QuizType) => {
-      const quiz = await prisma.quizzes.create({
+      await prisma.quizzes.create({
         data: {
           question: item.question,
           options: item.options,
@@ -69,7 +69,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       message: "Quiz added to DB successfully",
-      // data: quizObj,
     });
   } catch (error) {
     console.error("Error while adding quiz to DB!", error);
