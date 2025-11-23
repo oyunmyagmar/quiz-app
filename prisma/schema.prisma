@@ -21,21 +21,6 @@ model articles {
   quizzes   quizzes[]
 }
 
-model courses {
-  id     Int      @id @default(autoincrement())
-  title  String?  @db.VarChar(50)
-  grades grades[]
-}
-
-model grades {
-  id        Int      @id @default(autoincrement())
-  studentid Int
-  courseid  Int
-  grade     String?  @db.VarChar(5)
-  courses   courses  @relation(fields: [courseid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  students  students @relation(fields: [studentid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
 model quizzes {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   question  String?
@@ -61,14 +46,6 @@ model scores {
   attempts      attempts  @relation(fields: [attemptid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   quizzes       quizzes   @relation(fields: [quizid], references: [id], onDelete: NoAction, onUpdate: NoAction)
   users         users     @relation(fields: [userid], references: [id], onDelete: NoAction, onUpdate: NoAction)
-}
-
-model students {
-  id     Int      @id @default(autoincrement())
-  name   String   @db.VarChar(50)
-  age    Int?
-  gender String?  @db.VarChar(50)
-  grades grades[]
 }
 
 model users {
