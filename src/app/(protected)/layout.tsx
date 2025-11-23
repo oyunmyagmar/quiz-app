@@ -9,6 +9,7 @@ import { UserResource } from "@clerk/shared/index-DUJxisRL";
 import { toast } from "sonner";
 import { UserType } from "@/lib/types";
 import { Toaster } from "@/components/ui";
+import { ArticleProvider } from "../_providers/ArticleProvider";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { user, isLoaded } = useUser();
@@ -83,10 +84,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="w-screen h-screen flex">
-      <AppSidebar />
-      <Header />
-      {children}
-      <Toaster position="top-center" />
+      <ArticleProvider>
+        <>
+          <AppSidebar />
+          <Header />
+          {children}
+          <Toaster position="top-center" />
+        </>
+      </ArticleProvider>
     </div>
   );
 }
