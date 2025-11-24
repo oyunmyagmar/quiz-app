@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 import { useUser } from "@clerk/nextjs";
 import { QuizGeneratorHeading } from "../_components";
-import { ArticleContext, ArticleProvider } from "../_providers/ArticleProvider";
+import { ArticleProvider, useData } from "../_providers/ArticleProvider";
 
 const Homepage = () => {
   const {
@@ -19,7 +19,7 @@ const Homepage = () => {
     setArticleContent,
     generateSummary,
     loading,
-  } = useContext(ArticleContext);
+  } = useData();
   console.log({ articleTitle });
   console.log({ articleContent });
 

@@ -3,7 +3,7 @@
 import { cleanText } from "@/lib/utils/get-clean-text";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import React, { createContext, ReactNode, useState } from "react";
+import React, { createContext, ReactNode, useContext, useState } from "react";
 import { toast } from "sonner";
 import { useSWRConfig } from "swr";
 
@@ -18,7 +18,7 @@ type ArticleContextType = {
   loading: boolean;
 };
 
-export const ArticleContext = createContext<ArticleContextType>(
+const ArticleContext = createContext<ArticleContextType>(
   {} as ArticleContextType
 );
 
@@ -96,4 +96,7 @@ export const ArticleProvider = ({ children }: Props) => {
       {children}
     </ArticleContext.Provider>
   );
+};
+export const useData = () => {
+  return useContext(ArticleContext);
 };
