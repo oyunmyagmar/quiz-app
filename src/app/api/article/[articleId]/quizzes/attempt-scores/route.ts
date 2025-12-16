@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { QuizPrevScoreResultsType } from "@/lib/types";
+import { QuizResultType } from "@/lib/types";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
   });
 
   attempt &&
-    quizResult.map(async (item: any) => {
+    quizResult.map(async (item: QuizResultType) => {
       const score = await prisma.scores.create({
         data: {
           quizid: item.quizQuestionId,

@@ -1,13 +1,8 @@
 "use client";
 
-import React, { useContext, useState } from "react";
+import React from "react";
 import { Button, Input, Label, Textarea } from "@/components/ui";
-import { useRouter } from "next/navigation";
-import { cleanText } from "@/lib/utils/get-clean-text";
 import { LuLoaderCircle } from "react-icons/lu";
-import { toast } from "sonner";
-import { useSWRConfig } from "swr";
-import { useUser } from "@clerk/nextjs";
 import { QuizGeneratorHeading } from "../_components";
 import { ArticleProvider, useData } from "../_providers/ArticleProvider";
 

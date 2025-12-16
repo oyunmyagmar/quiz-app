@@ -16,7 +16,7 @@ import {
 } from "@/components/ui";
 import { LuCircleCheck } from "react-icons/lu";
 import { IoCloseCircleOutline } from "react-icons/io5";
-import { QuizAllAttemptsType, QuizPrevScoreResultsType } from "@/lib/types";
+import { QuizAllAttemptsType } from "@/lib/types";
 import { toast } from "sonner";
 import { useUser } from "@clerk/nextjs";
 import { TotalScoreComp } from "@/app/_components";

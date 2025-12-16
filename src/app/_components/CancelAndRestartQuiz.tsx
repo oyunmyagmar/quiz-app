@@ -42,7 +42,7 @@ export const CancelAndRestartQuiz = ({
             Are you sure?
           </AlertDialogTitle>
           <AlertDialogDescription className="leading-5 text-[#B91C1C]">
-            If you press 'Cancel', this quiz will restart from the beginning.
+            If you press Cancel, this quiz will restart from the beginning.
           </AlertDialogDescription>
         </AlertDialogHeader>
 

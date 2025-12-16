@@ -18,7 +18,7 @@ const QuizPage = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [sec, setSec] = useState<number>(0);
   const [timeIsRunning, setTimeIsRunning] = useState<boolean>(false);
-  let timeSpentOnQuiz =
+  const timeSpentOnQuiz =
     (Math.floor(sec / 60) < 10 ? "0" : "") +
     Math.floor(sec / 60) +
     ":" +
@@ -35,7 +35,7 @@ const QuizPage = () => {
     } else {
       userQuizScore = 0;
     }
-
+    console.log({ quizResult });
     const newQuizResult = [
       ...quizResult,
       {
