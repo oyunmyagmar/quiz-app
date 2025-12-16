@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
     try {
       const response = await fetch(
-        `{${process.env.NEXT_PUBLIC_API_URL}/api/users}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
         {
           method: "POST",
           headers: {
