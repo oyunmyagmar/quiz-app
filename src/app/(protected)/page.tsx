@@ -20,8 +20,6 @@ const Homepage = () => {
     generateSummary,
     loading,
   } = useData();
-  console.log({ articleTitle });
-  console.log({ articleContent });
 
   return (
     <ArticleProvider>

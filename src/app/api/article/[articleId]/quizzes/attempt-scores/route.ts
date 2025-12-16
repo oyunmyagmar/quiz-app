@@ -29,7 +29,6 @@ export async function GET(
 
 export async function POST(request: NextRequest) {
   const { userClerkId, quizResult, sec, articleId } = await request.json();
-  console.log({ quizResult });
 
   const user = await prisma.users.findUnique({
     where: { clerkid: userClerkId },
