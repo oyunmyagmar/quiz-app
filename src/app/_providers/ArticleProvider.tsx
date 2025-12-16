@@ -39,11 +39,14 @@ export const ArticleProvider = ({ children }: Props) => {
 
     setLoading(true);
 
-    const response = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ articleTitle, articleContent }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/generate`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleTitle, articleContent }),
+      }
+    );
 
     if (!response.ok) {
       toast.error("Failed to generate summary!");
@@ -55,7 +58,7 @@ export const ArticleProvider = ({ children }: Props) => {
     const cleanedArticleContent = cleanText(articleContent);
     const cleanedSummary = cleanText(result.text);
 
-    const res = await fetch("/api/articles", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/articles`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

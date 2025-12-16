@@ -14,7 +14,9 @@ export const useQuiz = () => {
       return;
     }
 
-    const response = await fetch(`/api/article/${articleId}/quizzes`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/article/${articleId}/quizzes`
+    );
 
     if (!response.ok) {
       toast.error("Failed to get quizzes!");

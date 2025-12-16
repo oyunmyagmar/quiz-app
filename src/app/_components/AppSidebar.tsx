@@ -22,7 +22,9 @@ export function AppSidebar() {
   };
 
   async function fetcher(path: string) {
-    const response = await fetch("/api" + path);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api` + path
+    );
 
     if (response.ok) {
       const { data } = await response.json();
@@ -35,9 +37,12 @@ export function AppSidebar() {
     if (confirm("Are you sure you want to delete this article?")) {
       setLoading(true);
 
-      const res = await fetch(`/api/article/${articleId}`, {
-        method: "DELETE",
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/article/${articleId}`,
+        {
+          method: "DELETE",
+        }
+      );
 
       if (!res) {
         toast.error("Delete failed!");

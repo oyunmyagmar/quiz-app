@@ -15,7 +15,9 @@ export const useArticle = () => {
       return;
     }
 
-    const response = await fetch(`/api/article/${articleId}`);
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/article/${articleId}`
+    );
 
     if (!response.ok) {
       toast.error("Failed to get article!");

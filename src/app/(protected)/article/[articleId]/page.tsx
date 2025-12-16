@@ -26,14 +26,17 @@ const ArticlePage = () => {
 
     setLoading(true);
 
-    const response = await fetch(`/api/article/${articleId}/quizzes`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        selectedArticleSummary: selectedArticle.summary,
-        articleId,
-      }),
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/article/${articleId}/quizzes`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          selectedArticleSummary: selectedArticle.summary,
+          articleId,
+        }),
+      }
+    );
 
     if (!response.ok) {
       toast.error("Error while generating or adding quiz to DB!");

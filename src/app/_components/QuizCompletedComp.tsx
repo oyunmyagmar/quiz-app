@@ -44,7 +44,7 @@ export const QuizCompletedComp = ({
     setLoading(true);
 
     const res = await fetch(
-      `/api/article/${articleId}/quizzes/attempt-scores`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/article/${articleId}/quizzes/attempt-scores`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
