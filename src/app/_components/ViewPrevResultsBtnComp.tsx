@@ -33,7 +33,7 @@ export const ViewPrevResultsBtnComp = ({
 
   const getQuizResults = async () => {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/article/${articleId}/quizzes/attempt-scores`
+      `/api/article/${articleId}/quizzes/attempt-scores`
     );
 
     if (!response.ok) {
