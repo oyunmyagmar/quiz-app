@@ -36,20 +36,17 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     setIsLoading(true);
 
     try {
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            clerkId: user.id,
-            email: user.emailAddresses[0].emailAddress,
-            name: user.firstName,
-          }),
-        }
-      );
+      const response = await fetch(`/api/users`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          clerkId: user.id,
+          email: user.emailAddresses[0].emailAddress,
+          name: user.firstName,
+        }),
+      });
 
       if (!response.ok) {
         toast("Failed to register user!");
