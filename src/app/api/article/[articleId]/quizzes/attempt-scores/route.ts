@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
 
   attempt &&
     quizResult.map(async (item: QuizResultType) => {
-      const score = await prisma.scores.create({
+      await prisma.scores.create({
         data: {
           quizid: item.quizQuestionId,
           userid: user.id,

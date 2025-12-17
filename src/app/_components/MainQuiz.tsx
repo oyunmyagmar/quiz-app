@@ -13,7 +13,7 @@ export const MainQuiz = ({
 }) => {
   return (
     <div>
-      {selectedArticleQuizzes.map((quiz, i) => {
+      {selectedArticleQuizzes?.map((quiz, i) => {
         return (
           step === i && (
             <div key={quiz.id} className="flex flex-col gap-5">
