@@ -32,3 +32,8 @@ export async function POST(request: NextRequest) {
     data: user,
   });
 }
+
+export async function GET() {
+  const users = await prisma.users.findMany();
+  return Response.json(users);
+}
